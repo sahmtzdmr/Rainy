@@ -16,7 +16,7 @@ import com.sadikahmetozdemir.rainy.BR
 import com.sadikahmetozdemir.rainy.core.ui.findGenericSuperclass
 
 abstract class BaseFragment<VDB : ViewDataBinding, VM : BaseViewModel> constructor(
-    @LayoutRes private val layoutId: Int
+    @LayoutRes private val layoutId: Int,
 ) : Fragment() {
     @Suppress("UNCHECKED_CAST")
     val viewModelClass: Class<VM>
@@ -45,7 +45,7 @@ abstract class BaseFragment<VDB : ViewDataBinding, VM : BaseViewModel> construct
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
         if (isViewCreated) {
             return rootView
