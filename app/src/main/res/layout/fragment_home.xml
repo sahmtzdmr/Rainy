@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_screen"
+    android:background="@drawable/bg_screen_sun"
     tools:context=".ui.HomeFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -94,8 +94,6 @@
             android:layout_height="wrap_content"
             android:text="@string/wind_speed"
             app:layout_constraintEnd_toStartOf="@id/tv_degree"
-
-            app:layout_constraintHorizontal_bias=""
             app:layout_constraintTop_toBottomOf="@id/tv_degree" />
 
         <androidx.appcompat.widget.AppCompatImageView
@@ -120,16 +118,16 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_child_item"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             tools:listitem="@layout/custom_forecast_item"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="@id/guidelineRight"
+            app:layout_constraintStart_toStartOf="@id/guidelineLeft"
             app:layout_constraintVertical_bias="0.9"
-            app:layout_constraintTop_toBottomOf="@id/tv_rain_rate"
+            app:layout_constraintTop_toBottomOf="@id/tv_rain_rate"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
