@@ -1,6 +1,8 @@
 package com.sadikahmetozdemir.rainy.di
 
 import com.sadikahmetozdemir.rainy.core.service.WeatherAPI
+import com.sadikahmetozdemir.rainy.core.shared.repository.DefaultRepository
+import com.sadikahmetozdemir.rainy.utils.ConnectivityInterceptor
 import com.sadikahmetozdemir.rainy.utils.Constants
 import com.sadikahmetozdemir.rainy.utils.NetworkInterceptor
 import dagger.Module
@@ -33,9 +35,20 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideInterceptor(networkInterceptor: NetworkInterceptor): OkHttpClient {
+    fun provideInterceptor(
+        networkInterceptor: NetworkInterceptor,
+        connectivityInterceptor: ConnectivityInterceptor,
+    ): OkHttpClient {
         return OkHttpClient.Builder()
             .addInterceptor(networkInterceptor)
+            .addInterceptor(connectivityInterceptor)
             .build()
+    }
+    @Provides
+    @Singleton
+    fun provideDefaultRepository(
+        weatherAPI: WeatherAPI
+    ): DefaultRepository{
+return DefaultRepository(weatherAPI)
     }
 }
