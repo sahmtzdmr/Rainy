@@ -29,7 +29,7 @@ data class WeatherResponseModel(
 	val coordModel: CoordModel? = null,
 
 	@field:SerializedName("weather")
-	val weather: List<WeatherItemModel?>? = null,
+	val weatherItemModel: List<WeatherItemModel?>? = null,
 
 	@field:SerializedName("name")
 	val name: String? = null,
