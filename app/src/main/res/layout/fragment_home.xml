@@ -8,13 +8,12 @@
         <variable
             name="vM"
             type="com.sadikahmetozdemir.rainy.ui.HomeViewModel" />
-
     </data>
 
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
+        backgroundResource="@{vM.weather.weatherItemModel.get(0).icon}"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/bg_screen_cloudly"
         tools:context=".ui.HomeFragment">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -57,10 +56,10 @@
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/iv_weather"
+                imageResource="@{vM.weather.weatherItemModel.get(0).icon}"
                 android:layout_width="0dp"
                 android:layout_height="250dp"
                 android:scaleType="fitCenter"
-                android:src="@drawable/png_scattered_clouds"
                 app:layout_constraintEnd_toEndOf="@id/guidelineRight"
                 app:layout_constraintStart_toStartOf="@id/guidelineLeft"
                 app:layout_constraintTop_toBottomOf="@id/et_search" />
@@ -141,5 +140,5 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

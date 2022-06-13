@@ -24,9 +24,6 @@ class HomeFragment :
                 binding.tvDegree.text = it.mainModel?.temp?.toString()
                 binding.tvRainRate.text = it.mainModel?.humidity.toString() + " %"
                 binding.tvWindSpeed.text = it.windModel?.speed.toString() + " km/h"
-                it.weatherItemModel?.get(0)?.icon
-                binding.ivWeather.load(url = Constants.ICON + it.weatherItemModel?.get(0)?.icon + "@2x.png")
-
             }
         }
     }
