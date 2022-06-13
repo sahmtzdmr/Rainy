@@ -11,6 +11,6 @@ fun ImageView.load(isFadeInEnabled: Boolean = true, url: String?) {
         .with(context)
         .load(url)
         .transition(DrawableTransitionOptions.withCrossFade(duration))
-        .placeholder(R.drawable.bg_screen_sun)
+        .placeholder(R.drawable.ic_search_svgrepo_com)
         .into(this)
 }
