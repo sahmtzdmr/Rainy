@@ -8,6 +8,7 @@
         <variable
             name="vM"
             type="com.sadikahmetozdemir.rainy.ui.HomeViewModel" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -40,6 +41,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_8"
                 android:hint="@string/city_name"
+
                 app:layout_constraintEnd_toStartOf="@id/iv_search"
                 app:layout_constraintStart_toStartOf="@id/guidelineLeft"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -53,6 +55,8 @@
                 app:layout_constraintEnd_toEndOf="@id/guidelineRight"
                 app:layout_constraintStart_toEndOf="@id/et_search"
                 app:layout_constraintTop_toTopOf="parent" />
+
+
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/iv_weather"
@@ -69,7 +73,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingTop="@dimen/margin_8"
-                android:text="güneşli"
+                android:textAllCaps="true"
+                android:textColor="@color/black"
+                android:text="@{vM.weather.weatherItemModel.get(0).description}"
                 android:textSize="15dp"
                 app:layout_constraintEnd_toEndOf="@id/guidelineRight"
                 app:layout_constraintStart_toStartOf="@id/guidelineLeft"
@@ -93,7 +99,7 @@
                 android:layout_height="@dimen/weather_size"
                 android:src="@drawable/ic_wind_svgrepo_com"
                 app:layout_constraintEnd_toStartOf="@id/tv_wind_speed"
-                app:layout_constraintHorizontal_bias="0.9"
+                app:layout_constraintHorizontal_bias="4"
                 app:layout_constraintStart_toStartOf="@id/guidelineLeft"
                 app:layout_constraintTop_toBottomOf="@id/tv_degree" />
 
@@ -103,6 +109,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/wind_speed"
                 app:layout_constraintEnd_toStartOf="@id/tv_degree"
+                app:layout_constraintStart_toEndOf="@id/iv_wind"
                 app:layout_constraintTop_toBottomOf="@id/tv_degree" />
 
             <androidx.appcompat.widget.AppCompatImageView
@@ -127,7 +134,7 @@
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_child_item"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
