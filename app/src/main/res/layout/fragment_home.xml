@@ -40,97 +40,130 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_8"
+                android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
                 android:hint="@string/city_name"
-
+                android:inputType="text"
+                android:text="@={vM.etCity}"
                 app:layout_constraintEnd_toStartOf="@id/iv_search"
                 app:layout_constraintStart_toStartOf="@id/guidelineLeft"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/iv_search"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
                 android:layout_marginTop="@dimen/margin_8"
+                android:onClick="@{()->vM.getForecastData()}"
                 android:src="@drawable/ic_search_svgrepo_com"
                 app:layout_constraintEnd_toEndOf="@id/guidelineRight"
                 app:layout_constraintStart_toEndOf="@id/et_search"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <TextView
+                android:id="@+id/tv_cityName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/et_search"
+                tools:text="Deneme" />
 
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/iv_weather"
-                imageResource="@{vM.weather.weatherItemModel.get(0).icon}"
-                android:layout_width="0dp"
-                android:layout_height="250dp"
-                android:scaleType="fitCenter"
-                app:layout_constraintEnd_toEndOf="@id/guidelineRight"
-                app:layout_constraintStart_toStartOf="@id/guidelineLeft"
-                app:layout_constraintTop_toBottomOf="@id/et_search" />
 
             <TextView
                 android:id="@+id/tv_weather"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingTop="@dimen/margin_8"
+                android:text="@{vM.weather.weatherItemModel.get(0).description}"
                 android:textAllCaps="true"
                 android:textColor="@color/black"
-                android:text="@{vM.weather.weatherItemModel.get(0).description}"
-                android:textSize="15dp"
+                android:textSize="15sp"
                 app:layout_constraintEnd_toEndOf="@id/guidelineRight"
                 app:layout_constraintStart_toStartOf="@id/guidelineLeft"
                 app:layout_constraintTop_toBottomOf="@id/iv_weather" />
+
 
             <TextView
                 android:id="@+id/tv_degree"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
                 android:layout_marginTop="@dimen/margin_8"
-                android:text="30"
+                android:alpha="0.5"
+                android:background="@android:color/transparent"
+                android:paddingBottom="30dp"
+                android:textColor="@color/black"
                 android:textSize="60sp"
-                android:textStyle="bold"
+                android:textStyle="bold|italic"
+                app:layout_constraintStart_toStartOf="@id/iv_weather"
+                app:layout_constraintTop_toTopOf="@id/iv_weather"
+                tools:text="30" />
+
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/iv_weather"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginTop="16dp"
+                android:paddingStart="30dp"
+                android:paddingTop="30dp"
+                app:layout_constraintBottom_toTopOf="@id/tv_weather"
                 app:layout_constraintEnd_toEndOf="@id/guidelineRight"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="@id/guidelineLeft"
-                app:layout_constraintTop_toBottomOf="@id/tv_weather" />
+                app:layout_constraintTop_toBottomOf="@id/tv_cityName"
+                app:lottie_autoPlay="true"
+                app:lottie_loop="true"
+                app:lottie_rawRes="@raw/windy_icon" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/iv_wind"
                 android:layout_width="@dimen/weather_size"
                 android:layout_height="@dimen/weather_size"
+                android:layout_marginStart="32dp"
                 android:src="@drawable/ic_wind_svgrepo_com"
                 app:layout_constraintEnd_toStartOf="@id/tv_wind_speed"
-                app:layout_constraintHorizontal_bias="4"
                 app:layout_constraintStart_toStartOf="@id/guidelineLeft"
-                app:layout_constraintTop_toBottomOf="@id/tv_degree" />
+                app:layout_constraintTop_toTopOf="@id/tv_wind_speed"
+                app:layout_constraintVertical_bias="1" />
 
             <TextView
                 android:id="@+id/tv_wind_speed"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_16"
+                android:layout_marginTop="16dp"
                 android:text="@string/wind_speed"
-                app:layout_constraintEnd_toStartOf="@id/tv_degree"
+                android:textColor="@color/black"
+                app:layout_constraintBottom_toTopOf="@id/rv_child_item"
                 app:layout_constraintStart_toEndOf="@id/iv_wind"
-                app:layout_constraintTop_toBottomOf="@id/tv_degree" />
+                app:layout_constraintTop_toBottomOf="@id/tv_weather"
+                app:layout_constraintVertical_bias="0.1" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/iv_rain"
                 android:layout_width="@dimen/weather_size"
                 android:layout_height="@dimen/weather_size"
                 android:src="@drawable/ic_rain_svgrepo_com"
-                app:layout_constraintEnd_toEndOf="@id/tv_rain_rate"
-                app:layout_constraintHorizontal_bias="0"
-                app:layout_constraintStart_toEndOf="@id/tv_degree"
-                app:layout_constraintTop_toBottomOf="@id/tv_degree" />
+                app:layout_constraintEnd_toStartOf="@id/tv_rain_rate"
+                app:layout_constraintHorizontal_bias="0.9"
+                app:layout_constraintStart_toEndOf="@id/tv_wind_speed"
+                app:layout_constraintTop_toTopOf="@id/tv_rain_rate"
+                app:layout_constraintVertical_bias="0.1" />
 
             <TextView
                 android:id="@+id/tv_rain_rate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="32dp"
                 android:text="@string/rain_rate"
+                android:textColor="@color/black"
+                app:layout_constraintBottom_toTopOf="@id/rv_child_item"
                 app:layout_constraintEnd_toEndOf="@id/guidelineRight"
-                app:layout_constraintHorizontal_bias="0.1"
-                app:layout_constraintStart_toEndOf="@id/iv_rain"
-                app:layout_constraintTop_toBottomOf="@id/tv_degree" />
+                app:layout_constraintTop_toBottomOf="@id/tv_weather"
+                app:layout_constraintVertical_bias="0.1" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_child_item"
@@ -141,8 +174,6 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@id/guidelineRight"
                 app:layout_constraintStart_toStartOf="@id/guidelineLeft"
-                app:layout_constraintTop_toBottomOf="@id/tv_rain_rate"
-                app:layout_constraintVertical_bias="0.9"
                 tools:listitem="@layout/custom_forecast_item" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
