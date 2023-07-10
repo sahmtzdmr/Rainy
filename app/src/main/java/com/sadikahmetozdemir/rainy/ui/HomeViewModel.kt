@@ -1,6 +1,5 @@
 package com.sadikahmetozdemir.rainy.ui
 
-import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -9,10 +8,10 @@ import com.sadikahmetozdemir.rainy.base.BaseViewEvent
 import com.sadikahmetozdemir.rainy.base.BaseViewModel
 import com.sadikahmetozdemir.rainy.core.shared.remote.WeatherResponseModel
 import com.sadikahmetozdemir.rainy.core.shared.repository.DefaultRepository
+import com.sadikahmetozdemir.rainy.utils.Constants
 import com.sadikahmetozdemir.rainy.utils.SharedPreferenceStorage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import org.w3c.dom.Comment
 import sadikahmetozdemir.rainy.core.shared.remote.daily.DailyWeatherResponse
 import javax.inject.Inject
 
@@ -30,12 +29,32 @@ class HomeViewModel @Inject constructor(
     val weather: LiveData<WeatherResponseModel> get() = _weather
     private val _dailyWeather: MutableLiveData<List<DailyWeatherResponse>> = MutableLiveData()
     val dailyWeather: LiveData<List<DailyWeatherResponse>> get() = _dailyWeather
+    private val _loading: MutableLiveData<Boolean> = MutableLiveData()
+    val loading: LiveData<Boolean> get() = _loading
+
 
     init {
-        getCurrentData(lat, lon)
+        getCurrentData(lat, lon, Constants.METRIC)
 //        getCurrentData("44.3473", "44.3473")
-        getDailyWeather(lat, lon, cnt)
+        getDailyWeather(lat, lon, cnt, Constants.METRIC)
 //        getDailyWeather("44.3473", "44.3473",cnt)
+
+    }
+
+    fun getForecastFromRV(location: String) {
+        sendRequest(request = {
+            defaultRepository.getForecastData(
+                location,
+                Constants.METRIC
+            )
+        },
+            success =
+            { _weather.value = it },
+            error =
+            {
+                it
+            }
+        )
 
     }
 
@@ -46,8 +65,10 @@ class HomeViewModel @Inject constructor(
         }
         sendRequest(
             request = {
-
-                defaultRepository.getForecastData(etCity.value?.trim()?.lowercase().toString())
+                defaultRepository.getForecastData(
+                    etCity.value?.trim()?.lowercase().toString(),
+                    Constants.METRIC
+                )
             },
             success = {
                 _weather.value = it
@@ -59,16 +80,20 @@ class HomeViewModel @Inject constructor(
 
     }
 
-    fun getCurrentData(lat: String, lon: String) {
-        sendRequest(request = { defaultRepository.getCurrentWeather(lat, lon) },
+    fun getCurrentData(lat: String, lon: String, units: String) {
+        sendRequest(request = {
+            _loading.value = true
+            defaultRepository.getCurrentWeather(lat, lon, units)
+        },
             success = {
+                _loading.value = false
                 _weather.value = it
             }, error = { it }
         )
     }
 
-    fun getDailyWeather(lat: String, lon: String, cnt: String) {
-        sendRequest(request = { defaultRepository.getDailyWeather(lat, lon, cnt) },
+    fun getDailyWeather(lat: String, lon: String, cnt: String, units: String) {
+        sendRequest(request = { defaultRepository.getDailyWeather(lat, lon, cnt, units) },
             success = { dailyResponse ->
                 _dailyWeather.value = listOf(dailyResponse)
             }, error = { it }
@@ -78,7 +103,7 @@ class HomeViewModel @Inject constructor(
     companion object {
         val LAT = "lat"
         val LON = "lon"
-        val CNT = "7"
+        val CNT = "25"
     }
 
 

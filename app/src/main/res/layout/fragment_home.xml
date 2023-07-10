@@ -40,10 +40,12 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_8"
-                android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                android:digits="abcçdefgğhijklmnoöpqrsştuvwxyzABCÇDEFGĞHIİJKLMNOÖPQRSŞTUÜVWXYZ"
                 android:hint="@string/city_name"
+                android:importantForAutofill="no"
                 android:inputType="text"
                 android:text="@={vM.etCity}"
+                app:layout_constraintBottom_toTopOf="@id/iv_weather"
                 app:layout_constraintEnd_toStartOf="@id/iv_search"
                 app:layout_constraintStart_toStartOf="@id/guidelineLeft"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -55,6 +57,7 @@
                 android:layout_marginTop="@dimen/margin_8"
                 android:onClick="@{()->vM.getForecastData()}"
                 android:src="@drawable/ic_search_svgrepo_com"
+                app:layout_constraintBottom_toBottomOf="@id/et_search"
                 app:layout_constraintEnd_toEndOf="@id/guidelineRight"
                 app:layout_constraintStart_toEndOf="@id/et_search"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -63,9 +66,13 @@
                 android:id="@+id/tv_cityName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:rotation="90"
+                android:textAllCaps="true"
+                android:textColor="@color/white"
                 android:textSize="16sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/iv_wind"
+                app:layout_constraintEnd_toStartOf="@id/iv_weather"
+                app:layout_constraintStart_toStartOf="@id/iv_weather"
                 app:layout_constraintTop_toBottomOf="@id/et_search"
                 tools:text="Deneme" />
 
@@ -74,14 +81,15 @@
                 android:id="@+id/tv_weather"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingTop="@dimen/margin_8"
+                android:rotation="270"
                 android:text="@{vM.weather.weatherItemModel.get(0).description}"
                 android:textAllCaps="true"
-                android:textColor="@color/black"
-                android:textSize="15sp"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toTopOf="@id/tv_rain_rate"
                 app:layout_constraintEnd_toEndOf="@id/guidelineRight"
-                app:layout_constraintStart_toStartOf="@id/guidelineLeft"
-                app:layout_constraintTop_toBottomOf="@id/iv_weather" />
+                app:layout_constraintStart_toEndOf="@id/iv_weather"
+                app:layout_constraintTop_toTopOf="@id/iv_weather" />
 
 
             <TextView
@@ -92,30 +100,67 @@
                 android:layout_marginTop="@dimen/margin_8"
                 android:alpha="0.5"
                 android:background="@android:color/transparent"
+                android:paddingStart="16dp"
                 android:paddingBottom="30dp"
                 android:textColor="@color/black"
                 android:textSize="60sp"
-                android:textStyle="bold|italic"
-                app:layout_constraintStart_toStartOf="@id/iv_weather"
+                android:textStyle="italic"
+                app:layout_constraintBottom_toTopOf="@id/tv_cityName"
+                app:layout_constraintStart_toStartOf="@id/guidelineLeft"
                 app:layout_constraintTop_toTopOf="@id/iv_weather"
+                app:layout_constraintVertical_bias="0"
                 tools:text="30" />
+
+            <TextView
+                android:id="@+id/tv_current_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:textColor="@color/black"
+                android:textSize="12sp"
+                android:textStyle="italic"
+                app:layout_constraintEnd_toEndOf="@id/iv_weather"
+                app:layout_constraintTop_toTopOf="@id/iv_weather"
+                tools:text="13.01.2321" />
+
+            <TextView
+                android:id="@+id/tv_current_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:textColor="@color/black"
+                android:textSize="12sp"
+                android:textStyle="italic"
+                app:layout_constraintEnd_toEndOf="@id/iv_weather"
+                app:layout_constraintTop_toBottomOf="@id/tv_current_date"
+                tools:text="14.00" />
 
 
             <com.airbnb.lottie.LottieAnimationView
                 android:id="@+id/iv_weather"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:layout_marginTop="16dp"
                 android:paddingStart="30dp"
                 android:paddingTop="30dp"
-                app:layout_constraintBottom_toTopOf="@id/tv_weather"
+                app:layout_constraintBottom_toTopOf="@id/iv_rain"
                 app:layout_constraintEnd_toEndOf="@id/guidelineRight"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="@id/guidelineLeft"
-                app:layout_constraintTop_toBottomOf="@id/tv_cityName"
+                app:layout_constraintTop_toBottomOf="@id/et_search"
                 app:lottie_autoPlay="true"
                 app:lottie_loop="true"
                 app:lottie_rawRes="@raw/windy_icon" />
+
+            <ProgressBar
+                android:id="@+id/pb_loading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/iv_wind"
@@ -123,6 +168,7 @@
                 android:layout_height="@dimen/weather_size"
                 android:layout_marginStart="32dp"
                 android:src="@drawable/ic_wind_svgrepo_com"
+                app:layout_constraintBottom_toTopOf="@id/rv_child_item"
                 app:layout_constraintEnd_toStartOf="@id/tv_wind_speed"
                 app:layout_constraintStart_toStartOf="@id/guidelineLeft"
                 app:layout_constraintTop_toTopOf="@id/tv_wind_speed"
@@ -136,9 +182,11 @@
                 android:layout_marginTop="16dp"
                 android:text="@string/wind_speed"
                 android:textColor="@color/black"
+                android:textStyle="bold"
                 app:layout_constraintBottom_toTopOf="@id/rv_child_item"
+                app:layout_constraintEnd_toStartOf="@id/iv_rain"
                 app:layout_constraintStart_toEndOf="@id/iv_wind"
-                app:layout_constraintTop_toBottomOf="@id/tv_weather"
+                app:layout_constraintTop_toBottomOf="@id/iv_weather"
                 app:layout_constraintVertical_bias="0.1" />
 
             <androidx.appcompat.widget.AppCompatImageView
@@ -146,6 +194,7 @@
                 android:layout_width="@dimen/weather_size"
                 android:layout_height="@dimen/weather_size"
                 android:src="@drawable/ic_rain_svgrepo_com"
+                app:layout_constraintBottom_toTopOf="@id/rv_child_item"
                 app:layout_constraintEnd_toStartOf="@id/tv_rain_rate"
                 app:layout_constraintHorizontal_bias="0.9"
                 app:layout_constraintStart_toEndOf="@id/tv_wind_speed"
@@ -160,9 +209,11 @@
                 android:layout_marginEnd="32dp"
                 android:text="@string/rain_rate"
                 android:textColor="@color/black"
+                android:textStyle="bold"
                 app:layout_constraintBottom_toTopOf="@id/rv_child_item"
                 app:layout_constraintEnd_toEndOf="@id/guidelineRight"
-                app:layout_constraintTop_toBottomOf="@id/tv_weather"
+                app:layout_constraintStart_toEndOf="@id/iv_rain"
+                app:layout_constraintTop_toBottomOf="@id/iv_weather"
                 app:layout_constraintVertical_bias="0.1" />
 
             <androidx.recyclerview.widget.RecyclerView
@@ -174,6 +225,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@id/guidelineRight"
                 app:layout_constraintStart_toStartOf="@id/guidelineLeft"
+                app:layout_constraintTop_toBottomOf="@id/iv_wind"
                 tools:listitem="@layout/custom_forecast_item" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

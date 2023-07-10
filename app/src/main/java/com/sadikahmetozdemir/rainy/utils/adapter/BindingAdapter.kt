@@ -77,28 +77,28 @@ fun setBackgroundResource(constraintLayout: ConstraintLayout, url: String?) {
     when (url) {
         "01d" -> constraintLayout.setBackgroundResource(
             constraintLayout.resources.getIdentifier(
-                "bg_screen_sun",
+                "bg_screen_cloudly",
                 "drawable",
                 constraintLayout.context.packageName
             )
         )
         "01n" -> constraintLayout.setBackgroundResource(
             constraintLayout.resources.getIdentifier(
-                "bg_screen_sun",
+                "bg_screen_night",
                 "drawable",
                 constraintLayout.context.packageName
             )
         )
         "02d" -> constraintLayout.setBackgroundResource(
             constraintLayout.resources.getIdentifier(
-                "bg_screen_sun",
+                "bg_screen_cloudly",
                 "drawable",
                 constraintLayout.context.packageName
             )
         )
         "02n" -> constraintLayout.setBackgroundResource(
             constraintLayout.resources.getIdentifier(
-                "bg_screen_cloudly",
+                "bg_screen_night",
                 "drawable",
                 constraintLayout.context.packageName
             )
@@ -112,7 +112,7 @@ fun setBackgroundResource(constraintLayout: ConstraintLayout, url: String?) {
         )
         "03n" -> constraintLayout.setBackgroundResource(
             constraintLayout.resources.getIdentifier(
-                "bg_screen_cloudly",
+                "bg_screen_night",
                 "drawable",
                 constraintLayout.context.packageName
             )
@@ -126,70 +126,70 @@ fun setBackgroundResource(constraintLayout: ConstraintLayout, url: String?) {
         )
         "04n" -> constraintLayout.setBackgroundResource(
             constraintLayout.resources.getIdentifier(
-                "bg_screen_cloudly",
+                "bg_screen_night",
                 "drawable",
                 constraintLayout.context.packageName
             )
         )
         "09d" -> constraintLayout.setBackgroundResource(
             constraintLayout.resources.getIdentifier(
-                "bg_screen_cold",
+                "bg_screen_cloudly",
                 "drawable",
                 constraintLayout.context.packageName
             )
         )
         "09n" -> constraintLayout.setBackgroundResource(
             constraintLayout.resources.getIdentifier(
-                "bg_screen_cold",
+                "bg_screen_night",
                 "drawable",
                 constraintLayout.context.packageName
             )
         )
         "10d" -> constraintLayout.setBackgroundResource(
             constraintLayout.resources.getIdentifier(
-                "bg_screen_cold",
+                "bg_screen_cloudly",
                 "drawable",
                 constraintLayout.context.packageName
             )
         )
         "10n" -> constraintLayout.setBackgroundResource(
             constraintLayout.resources.getIdentifier(
-                "bg_screen_cold",
+                "bg_screen_night",
                 "drawable",
                 constraintLayout.context.packageName
             )
         )
         "11d" -> constraintLayout.setBackgroundResource(
             constraintLayout.resources.getIdentifier(
-                "bg_screen_cold",
+                "bg_screen_cloudly",
                 "drawable",
                 constraintLayout.context.packageName
             )
         )
         "11n" -> constraintLayout.setBackgroundResource(
             constraintLayout.resources.getIdentifier(
-                "bg_screen_cold",
+                "bg_screen_night",
                 "drawable",
                 constraintLayout.context.packageName
             )
         )
         "13d" -> constraintLayout.setBackgroundResource(
             constraintLayout.resources.getIdentifier(
-                "bg_screen_cold",
+                "bg_screen_cloudly",
                 "drawable",
                 constraintLayout.context.packageName
             )
         )
         "13n" -> constraintLayout.setBackgroundResource(
             constraintLayout.resources.getIdentifier(
-                "bg_screen_cold",
+                "bg_screen_night",
                 "drawable",
                 constraintLayout.context.packageName
             )
         )
         "50d" -> constraintLayout.setBackgroundResource(
             constraintLayout.resources.getIdentifier(
-                "bg_screen_night",
+                "bg_screen_cloudly",
                 "drawable",
                 constraintLayout.context.packageName
             )

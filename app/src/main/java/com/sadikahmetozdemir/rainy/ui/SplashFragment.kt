@@ -8,6 +8,7 @@ import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import android.view.View
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
@@ -37,7 +38,7 @@ class SplashFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         location = LocationServices.getFusedLocationProviderClient(this.requireActivity())
-        //if check
+//        if check
 //        if (context?.let { isLocationEnabled(it) } == true) {
 //            lifecycleScope.launch(Dispatchers.Main) {
 //                delay(3000)

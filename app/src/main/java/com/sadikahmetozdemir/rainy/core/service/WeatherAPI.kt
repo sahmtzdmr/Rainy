@@ -12,12 +12,14 @@ interface WeatherAPI {
     @GET("weather")
     suspend fun getForecastData(
         @Query("q") location: String,
+        @Query("units") units: String,
         @Query("lang") language: String = Constants.LANGUAGE,
     ): WeatherResponseModel
     @GET("weather")
     suspend fun getCurrentWeather(
         @Query("lat") lat: String,
         @Query("lon") lon: String,
+        @Query("units") units:String,
         @Query("lang") language: String = Constants.LANGUAGE,
     ): WeatherResponseModel
 
@@ -26,6 +28,7 @@ interface WeatherAPI {
         @Query("lat") lat: String,
         @Query("lon") lon: String,
         @Query("cnt") cnt: String,
+        @Query("units") units: String,
         @Query("lang") language: String = Constants.LANGUAGE,
     ): DailyWeatherResponse
 }
