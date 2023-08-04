@@ -14,6 +14,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.sadikahmetozdemir.rainy.BR
 import com.sadikahmetozdemir.rainy.core.ui.findGenericSuperclass
+import com.sadikahmetozdemir.rainy.utils.extensions.snackbar
 
 abstract class BaseFragment<VDB : ViewDataBinding, VM : BaseViewModel> constructor(
     @LayoutRes private val layoutId: Int,
@@ -73,7 +74,7 @@ abstract class BaseFragment<VDB : ViewDataBinding, VM : BaseViewModel> construct
                 findNavController().navigate(event.directions)
             }
             is BaseViewEvent.ShowMessage -> {
-//                snackbar(event.message)
+               snackbar(event.message)
             }
             BaseViewEvent.NavigateBack -> {
                 findNavController().popBackStack()

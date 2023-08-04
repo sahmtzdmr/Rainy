@@ -7,4 +7,9 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="russian_violet">#480355</color>
+    <color name="purpureus">#9448BC</color>
+    <color name="vista_blue">#7699D4</color>
+    <color name="aero">#63B4D1</color>
+    <color name="ice_blue">#90FCF9</color>
 </resources>

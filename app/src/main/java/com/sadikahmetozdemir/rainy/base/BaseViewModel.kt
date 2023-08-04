@@ -20,6 +20,9 @@ abstract class BaseViewModel : ViewModel() {
             return@launch
         baseEvent.postValue(BaseViewEvent.ShowMessage(message))
     }
+//    fun showLoading()=viewModelScope.launch {
+//        baseEvent.
+//    }
 
     fun showToast(message: String) = viewModelScope.launch {
         if (message.isBlank())
