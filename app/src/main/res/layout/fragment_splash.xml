@@ -20,7 +20,7 @@
             android:layout_height="match_parent"
             app:lottie_autoPlay="true"
             app:lottie_loop="true"
-            app:lottie_rawRes="@raw/weather_splash" />
+            app:lottie_rawRes="@raw/splash_anim" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

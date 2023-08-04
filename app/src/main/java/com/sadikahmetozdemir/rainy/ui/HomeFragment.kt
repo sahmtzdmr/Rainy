@@ -6,6 +6,7 @@ import androidx.navigation.fragment.navArgs
 import com.sadikahmetozdemir.rainy.R
 import com.sadikahmetozdemir.rainy.base.BaseFragment
 import com.sadikahmetozdemir.rainy.databinding.FragmentHomeBinding
+import com.sadikahmetozdemir.rainy.utils.Constants
 import com.sadikahmetozdemir.rainy.utils.adapter.changeWeatherIcon
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
@@ -26,7 +27,6 @@ class HomeFragment :
         }
         val lat = args.lat
         val lon = args.lon
-//        viewModel.getDailyWeather(lat,lon)
         viewModel.dailyWeather.observe(viewLifecycleOwner) {
             homeAdapter.updateDailyData((it.get(0).list))
         }
@@ -38,10 +38,7 @@ class HomeFragment :
         }
 
 
-//        viewModel.getForecastData("Londra")
         initObserve()
-//        viewModel.getCurrentData(lat,lon)
-//        viewModel.getDailyWeather(lat, lon)
     }
 
     fun initObserve() {
@@ -90,7 +87,8 @@ class HomeFragment :
                     ivWeather.visibility = View.VISIBLE
                     tvRainRate.visibility = View.VISIBLE
                 }
-            }}
+            }
+        }
     }
 
     fun getDate(): String {
@@ -107,13 +105,4 @@ class HomeFragment :
         return formattedTime
 
     }
-
-//    private fun getCurrentWeather() {
-//        viewModel.weather.observe(viewLifecycleOwner) {
-//            homeAdapter.(
-//                viewLifecycleOwner.lifecycle, it
-//            )
-//        }
-//    }
-
 }
