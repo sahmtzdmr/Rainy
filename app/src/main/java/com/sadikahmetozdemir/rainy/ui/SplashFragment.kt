@@ -4,23 +4,19 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Color
 import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
 import android.provider.Settings
-import android.view.Gravity
 import android.view.View
-import android.widget.FrameLayout
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.Task
-import com.google.android.material.snackbar.Snackbar
 import com.sadikahmetozdemir.rainy.R
 import com.sadikahmetozdemir.rainy.base.BaseFragment
-import com.sadikahmetozdemir.rainy.base.BaseViewEvent
 import com.sadikahmetozdemir.rainy.databinding.FragmentSplashBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -35,54 +31,36 @@ class SplashFragment :
 
     var lat: String = ""
     var lon: String = ""
+    private val LOCATION_PERMISSION_REQUEST_CODE = 1
 
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         location = LocationServices.getFusedLocationProviderClient(this.requireActivity())
         if (context?.let { isLocationEnabled(it) } == true) {
             lifecycleScope.launch(Dispatchers.Main) {
-                delay(4000)
+                delay(2500)
                 checkLocationPermission()
             }
-        } else
-            showEnableLocationDialog(this.requireContext())
+        } else showEnableLocationDialog(this.requireContext())
     }
 
     private fun checkLocationPermission() {
         val task: Task<Location> = location.lastLocation
         if (this.context?.let {
                 ActivityCompat.checkSelfPermission(
-                    it,
-                    android.Manifest.permission.ACCESS_FINE_LOCATION
+                    it, android.Manifest.permission.ACCESS_FINE_LOCATION
                 )
-            }
-            != PackageManager.PERMISSION_GRANTED && this.context?.let {
-                ActivityCompat
-                    .checkSelfPermission(
-                        it,
-                        android.Manifest.permission.ACCESS_COARSE_LOCATION
-                    )
-            } != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                arrayOf(
-                    android.Manifest.permission.ACCESS_FINE_LOCATION,
-                    android.Manifest.permission.ACCESS_COARSE_LOCATION
-                ),
-                1
-            )
-            return
+            } != PackageManager.PERMISSION_GRANTED && this.context?.let {
+                ActivityCompat.checkSelfPermission(
+                    it, android.Manifest.permission.ACCESS_COARSE_LOCATION
+                )
+            } != PackageManager.PERMISSION_GRANTED) {
+            requestLocationPermissions()
 
         } else {
             isLocationEnabled(requireContext())
         }
-
         task.addOnSuccessListener {
             if (it != null) {
                 lat = it.latitude.toString()
@@ -92,37 +70,58 @@ class SplashFragment :
         }
     }
 
+    private fun requestLocationPermissions() {
+        if (shouldShowRequestPermissionRationale(android.Manifest.permission.ACCESS_FINE_LOCATION) || shouldShowRequestPermissionRationale(
+                android.Manifest.permission.ACCESS_COARSE_LOCATION
+            )
+        ) {
+            // Kullanıcıya neden izin istediğinizi açıklayan bir diyalog gösterme şansı verin.
+            showEnableLocationDialog(requireContext())
+        } else {
+            requestPermissions(
+                arrayOf(
+                    android.Manifest.permission.ACCESS_FINE_LOCATION,
+                    android.Manifest.permission.ACCESS_COARSE_LOCATION
+                ), LOCATION_PERMISSION_REQUEST_CODE
+            )
+        }
+    }
+
     fun showEnableLocationDialog(context: Context) {
         isLocationDialogShowing
-        val alertDialog = AlertDialog.Builder(context)
-            .setTitle("Konum Hizmetleri")
-            .setCancelable(false)
-            .setMessage("Konum hizmetleri etkin değil. Lütfen etkinleştirin.")
-            .setPositiveButton("Ayarlar") { dialog, _ ->
-                val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-                context.startActivity(intent)
-                !isLocationDialogShowing
-                if (!isLocationDialogShowing) {
-                    dialog.cancel()
-                }
-            }
+        val explain = R.string.need_permission
+        val alertDialog =
+            AlertDialog.Builder(context).setTitle("Konum Hizmetleri").setCancelable(false)
+                .setMessage(explain).setPositiveButton("Ayarlar") { dialog, _ ->
+                    val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                    context.startActivity(intent)
+                    !isLocationDialogShowing
+                    if (!isLocationDialogShowing) {
+                        dialog.dismiss()
+                    }
+                }.setCancelable(false)
 
-            .create()
+                .create()
         alertDialog.show()
 
 
     }
 
-    fun showSnackbar(message: String) {
-        this.let { view ->
-            val snackbar = Snackbar.make(requireView(), message, Snackbar.LENGTH_LONG)
-            snackbar.setAction(R.string.text_action) { snackbar.dismiss() }
-            val view = snackbar.view
-            val params: FrameLayout.LayoutParams = view.layoutParams as FrameLayout.LayoutParams
-            params.gravity = Gravity.BOTTOM
-            view.layoutParams = params
-            snackbar.setBackgroundTint(Color.TRANSPARENT)
-            snackbar.show()
+    override fun onRequestPermissionsResult(
+        requestCode: Int, permissions: Array<out String>, grantResults: IntArray
+    ) {
+
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                isLocationEnabled(requireContext())
+            } else {
+                Toast.makeText(
+                    context, context?.getText(R.string.need_permission), Toast.LENGTH_SHORT
+                ).show()
+
+            }
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
         }
     }
 
@@ -130,21 +129,12 @@ class SplashFragment :
         super.onResume()
         if (context?.let { isLocationEnabled(it) } == true) {
             lifecycleScope.launch(Dispatchers.Main) {
-                delay(4000)
+                delay(2500)
                 checkLocationPermission()
             }
         }
     }
 
-
-    override fun onDestroy() {
-        super.onDestroy()
-    }
-
-    override fun onPause() {
-        super.onPause()
-
-    }
 
     fun isLocationEnabled(context: Context): Boolean {
         val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
