@@ -18,6 +18,7 @@ import com.google.android.gms.tasks.Task
 import com.sadikahmetozdemir.rainy.R
 import com.sadikahmetozdemir.rainy.base.BaseFragment
 import com.sadikahmetozdemir.rainy.databinding.FragmentSplashBinding
+import com.sadikahmetozdemir.rainy.utils.DataHelperManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -27,7 +28,8 @@ import kotlinx.coroutines.launch
 class SplashFragment :
     BaseFragment<FragmentSplashBinding, SplashViewModel>(R.layout.fragment_splash) {
     lateinit var location: FusedLocationProviderClient
-    private val isLocationDialogShowing = false
+    private var isLocationDialogShowing = false
+    lateinit var dataHelperManager: DataHelperManager
 
     var lat: String = ""
     var lon: String = ""
@@ -42,7 +44,8 @@ class SplashFragment :
                 delay(2500)
                 checkLocationPermission()
             }
-        } else showEnableLocationDialog(this.requireContext())
+        }
+                else showEnableLocationDialog(this.requireContext())
     }
 
     private fun checkLocationPermission() {
@@ -66,6 +69,12 @@ class SplashFragment :
                 lat = it.latitude.toString()
                 lon = it.longitude.toString()
                 viewModel.toHomePage(lat, lon)
+                dataHelperManager = DataHelperManager(requireContext())
+                lifecycleScope.launch(Dispatchers.Main) {
+                    dataHelperManager.saveLatitude(it.latitude.toString())
+                    dataHelperManager.saveLongitude(it.longitude.toString())
+
+                }
             }
         }
     }
@@ -75,8 +84,11 @@ class SplashFragment :
                 android.Manifest.permission.ACCESS_COARSE_LOCATION
             )
         ) {
-            // Kullanıcıya neden izin istediğinizi açıklayan bir diyalog gösterme şansı verin.
-            showEnableLocationDialog(requireContext())
+            if (!isLocationDialogShowing){
+                showEnableLocationDialog(requireContext())
+                isLocationDialogShowing=true
+            }
+
         } else {
             requestPermissions(
                 arrayOf(
@@ -99,7 +111,17 @@ class SplashFragment :
                     if (!isLocationDialogShowing) {
                         dialog.dismiss()
                     }
-                }.setCancelable(false)
+                }.setNegativeButton("İptal") { dialog, _ ->
+                    dataHelperManager = DataHelperManager(requireContext())
+                    lifecycleScope.launch(Dispatchers.Default) {
+                        lat = dataHelperManager.getLatitude()
+                        lon = dataHelperManager.getLongitude()
+                        viewModel.toHomePage(lat = lat, lon = lon)
+                    }
+                    dialog.dismiss()
+
+                }
+                .setCancelable(false)
 
                 .create()
         alertDialog.show()
