@@ -27,7 +27,9 @@ abstract class BaseViewModel : ViewModel() {
     fun showToast(message: String) = viewModelScope.launch {
         if (message.isBlank())
             return@launch
-        baseEvent.postValue(BaseViewEvent.ShowToast(message))
+        else {
+            baseEvent.postValue(BaseViewEvent.ShowToast(message))
+        }
     }
 
     fun handleException(exception: Exception) {
