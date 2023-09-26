@@ -80,7 +80,7 @@ abstract class BaseFragment<VDB : ViewDataBinding, VM : BaseViewModel> construct
                 findNavController().popBackStack()
             }
             is BaseViewEvent.ShowToast -> {
-                Toast.makeText(requireContext(), event.message, Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), event.message, Toast.LENGTH_LONG).show()
             }
         }
     }

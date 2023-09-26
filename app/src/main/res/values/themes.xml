@@ -16,11 +16,5 @@
         <!-- Customize your theme here. -->
     </style>
 
-<!--    <style name="SplashTheme" parent="Theme.MaterialComponents.Light.NoActionBar">-->
-<!--        <item name="android:windowBackground">@drawable/bg_splash</item>-->
-<!--        <item name="colorPrimary">@color/russian_violet</item>-->
-<!--        <item name="colorPrimaryDark">@color/purpureus</item>-->
-<!--        <item name="colorAccent">@color/ice_blue</item>-->
-<!--        <item name="android:statusBarColor">@color/ice_blue</item>-->
-<!--    </style>-->
+
 </resources>

@@ -7,4 +7,5 @@
     <string name="rain_rate">%1$d %</string>
     <string name="text_action">Tamam</string>
     <string name="need_permission">Uygulamamızın daha iyi hizmet verebilmesi için konum bilgisine ihtiyaç duyuyoruz.</string>
+    <string name="ask_permission">Konumunuzun açık olduğundan emin olun.</string>
 </resources>
