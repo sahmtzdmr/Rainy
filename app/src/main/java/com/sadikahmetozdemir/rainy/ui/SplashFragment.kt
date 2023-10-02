@@ -9,7 +9,6 @@ import android.location.LocationManager
 import android.os.Bundle
 import android.provider.Settings
 import android.view.View
-import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -42,10 +41,23 @@ class SplashFragment :
         super.onViewCreated(view, savedInstanceState)
         viewModel.showToast(getString(R.string.ask_permission))
         location = LocationServices.getFusedLocationProviderClient(this.requireActivity())
-        if (context?.let { isLocationEnabled(it) } == true) {
-            lifecycleScope.launch(Dispatchers.Main) {
-                delay(2500)
-                checkLocationPermission()
+        dataHelperManager = DataHelperManager(requireContext())
+        checkLocationPermission()
+        lifecycleScope.launch(Dispatchers.Main) {
+            delay(2500)
+            if (dataHelperManager.isFirstAttach()){
+                viewModel.toIntro()
+                dataHelperManager.firstAttach()
+            }
+            else{
+                if (context?.let { isLocationEnabled(it) } == true) {
+                    lifecycleScope.launch {
+                        checkLocationPermission()
+                        viewModel.toHomePage(dataHelperManager.getLatitude(),dataHelperManager.getLongitude())
+                    }
+                } else {
+                    showEnableLocationDialog(requireContext())
+                }
             }
         } else {
             showEnableLocationDialog(this.requireContext())
@@ -72,8 +84,7 @@ class SplashFragment :
             if (it != null) {
                 lat = it.latitude.toString()
                 lon = it.longitude.toString()
-                viewModel.toHomePage(lat, lon)
-                dataHelperManager = DataHelperManager(requireContext())
+//                viewModel.toHomePage(lat, lon)
                 lifecycleScope.launch(Dispatchers.Main) {
                     dataHelperManager.saveLatitude(it.latitude.toString())
                     dataHelperManager.saveLongitude(it.longitude.toString())
@@ -141,15 +152,16 @@ class SplashFragment :
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 isLocationEnabled(requireContext())
-            } else {
-                Toast.makeText(
-                    context, context?.getText(R.string.need_permission), Toast.LENGTH_SHORT
-                ).show()
-
             }
             super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
         }
+    }
+    fun isLocationEnabled(context: Context): Boolean {
+        val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
+            LocationManager.NETWORK_PROVIDER
+        )
     }
 
     override fun onResume() {
@@ -157,16 +169,11 @@ class SplashFragment :
         if (context?.let { isLocationEnabled(it) } == true) {
             lifecycleScope.launch(Dispatchers.Main) {
                 delay(2500)
-                checkLocationPermission()
+//                checkLocationPermission()
             }
         }
     }
 
 
-    fun isLocationEnabled(context: Context): Boolean {
-        val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
-            LocationManager.NETWORK_PROVIDER
-        )
-    }
+
 }

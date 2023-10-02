@@ -6,6 +6,23 @@
     <string name="wind_speed">%1$d km/h</string>
     <string name="rain_rate">%1$d %</string>
     <string name="text_action">Tamam</string>
+
+    <string name="walktrough_one">Rainy\'e Hoşgeldiniz</string>
+    <string name="walktrough_second">Konum Erişimi</string>
+    <string name="walktrough_third">Uygulamayı Kullanmaya Başlayın</string>
+    <string name="third_description">Hava Durumu Uygulamamızı kullanmaya başlayabilirsiniz! İstediğiniz zaman güncel hava durumu bilgilerini kontrol edebilirsiniz. Herhangi bir sorunuz veya geri bildiriminiz varsa, lütfen bize bildirin. Keyifli kullanımlar!</string>
+    <string name="second_description">İlk olarak, size en güncel hava durumu bilgilerini sunabilmemiz için konum erişimine ihtiyacımız var.</string>
+    <string name="terms">Gizlilik sözleşmesi</string>
+    <string name="first_description">Merhaba! Hava Durumu Uygulamamıza hoş geldiniz. Size dünya genelindeki güncel hava durumu bilgilerini sunmak için buradayız. Hadi başlayalım ve size uygulamamızın nasıl çalıştığını gösterelim.</string>
+    <string name="need_permission">Hava durumu tahminlerini almak için konum bilgilerinizi kullanıyoruz.
+        Uygulamamızın daha iyi hizmet verebilmesi için konum bilgisine ihtiyaç duyuyoruz.</string>
+    <string name="ask_permission">Hava durumu tahminlerini almak için konum bilgilerinizi kullanıyoruz.</string>
+    <string name="privacy_terms">  <i>Rainy\'e hoşgeldiniz. Rainy uygulaması anlık konumunuza göre hava olaylarını bildirir. Lütfen konumunuzun açık olduğundan emin olun.</i>
+    </string>
+    <string name="next">İleri</string>
+    <string name="start">Başla</string>
+
     <string name="need_permission">Uygulamamızın daha iyi hizmet verebilmesi için konum bilgisine ihtiyaç duyuyoruz.</string>
     <string name="ask_permission">Konumunuzun açık olduğundan emin olun.</string>
+
 </resources>

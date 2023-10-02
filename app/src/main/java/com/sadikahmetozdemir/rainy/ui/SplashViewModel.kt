@@ -11,5 +11,8 @@ class SplashViewModel @Inject constructor(private var defaultRepository: Default
     fun toHomePage(lat: String, lon: String) {
         navigate(SplashFragmentDirections.actionSplashFragmentToHomeFragment(lat, lon))
     }
+    fun toIntro(){
+        navigate(SplashFragmentDirections.actionSplashFragmentToIntroFragment())
+    }
 
 }
