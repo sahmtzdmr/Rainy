@@ -16,6 +16,8 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.Task
 import com.sadikahmetozdemir.rainy.R
 import com.sadikahmetozdemir.rainy.base.BaseFragment
+import com.sadikahmetozdemir.rainy.base.BaseViewEvent
+import com.sadikahmetozdemir.rainy.base.BaseViewEvent.ShowToast
 import com.sadikahmetozdemir.rainy.databinding.FragmentSplashBinding
 import com.sadikahmetozdemir.rainy.utils.DataHelperManager
 import dagger.hilt.android.AndroidEntryPoint
@@ -37,6 +39,7 @@ class SplashFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.showToast(getString(R.string.ask_permission))
         location = LocationServices.getFusedLocationProviderClient(this.requireActivity())
         dataHelperManager = DataHelperManager(requireContext())
         checkLocationPermission()
@@ -56,8 +59,9 @@ class SplashFragment :
                     showEnableLocationDialog(requireContext())
                 }
             }
+        } else {
+            showEnableLocationDialog(this.requireContext())
         }
-
     }
 
     private fun checkLocationPermission() {
@@ -109,6 +113,7 @@ class SplashFragment :
             )
         }
     }
+
 
     fun showEnableLocationDialog(context: Context) {
         isLocationDialogShowing

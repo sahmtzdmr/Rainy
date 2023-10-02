@@ -6,6 +6,7 @@
     <string name="wind_speed">%1$d km/h</string>
     <string name="rain_rate">%1$d %</string>
     <string name="text_action">Tamam</string>
+
     <string name="walktrough_one">Rainy\'e Hoşgeldiniz</string>
     <string name="walktrough_second">Konum Erişimi</string>
     <string name="walktrough_third">Uygulamayı Kullanmaya Başlayın</string>
@@ -20,4 +21,8 @@
     </string>
     <string name="next">İleri</string>
     <string name="start">Başla</string>
+
+    <string name="need_permission">Uygulamamızın daha iyi hizmet verebilmesi için konum bilgisine ihtiyaç duyuyoruz.</string>
+    <string name="ask_permission">Konumunuzun açık olduğundan emin olun.</string>
+
 </resources>
