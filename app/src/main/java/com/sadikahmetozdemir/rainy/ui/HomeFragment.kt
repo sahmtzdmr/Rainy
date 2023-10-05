@@ -1,6 +1,7 @@
 package com.sadikahmetozdemir.rainy.ui
 
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.View
 import androidx.navigation.fragment.navArgs
 import com.sadikahmetozdemir.rainy.R
@@ -36,7 +37,12 @@ class HomeFragment :
             rvChildItem.setHasFixedSize(true)
 
         }
-
+        binding.etSearch.setOnKeyListener { _, keyCode, event ->
+            if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)
+                viewModel.getForecastData()
+            return@setOnKeyListener true
+        }
+        false
 
         initObserve()
     }

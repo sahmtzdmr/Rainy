@@ -12,4 +12,5 @@
     <color name="vista_blue">#7699D4</color>
     <color name="aero">#63B4D1</color>
     <color name="ice_blue">#90FCF9</color>
+    <color name="background">#0D000000</color>
 </resources>

@@ -23,7 +23,7 @@ class HomeViewModel @Inject constructor(
     BaseViewModel() {
     val lat = savedStateHandle.get<String>(LAT) ?: ""
     val lon = savedStateHandle.get<String>(LON) ?: ""
-    val cnt = CNT ?: ""
+    val cnt = CNT
     val etCity = MutableLiveData("")
     private val _weather: MutableLiveData<WeatherResponseModel> = MutableLiveData()
     val weather: LiveData<WeatherResponseModel> get() = _weather
@@ -65,12 +65,14 @@ class HomeViewModel @Inject constructor(
         }
         sendRequest(
             request = {
+                _loading.value = true
                 defaultRepository.getForecastData(
                     etCity.value?.trim()?.lowercase().toString(),
                     Constants.METRIC
                 )
             },
             success = {
+                _loading.value = false
                 _weather.value = it
             },
             error = {
@@ -93,8 +95,11 @@ class HomeViewModel @Inject constructor(
     }
 
     fun getDailyWeather(lat: String, lon: String, cnt: String, units: String) {
-        sendRequest(request = { defaultRepository.getDailyWeather(lat, lon, cnt, units) },
+        sendRequest(request = {
+            _loading.value = true
+            defaultRepository.getDailyWeather(lat, lon, cnt, units) },
             success = { dailyResponse ->
+                _loading.value = false
                 _dailyWeather.value = listOf(dailyResponse)
             }, error = { it }
         )
