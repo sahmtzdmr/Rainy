@@ -9,6 +9,7 @@ import com.sadikahmetozdemir.rainy.base.BaseViewModel
 import com.sadikahmetozdemir.rainy.core.shared.remote.WeatherResponseModel
 import com.sadikahmetozdemir.rainy.core.shared.repository.DefaultRepository
 import com.sadikahmetozdemir.rainy.utils.Constants
+import com.sadikahmetozdemir.rainy.utils.DataHelperManager
 import com.sadikahmetozdemir.rainy.utils.SharedPreferenceStorage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -21,8 +22,8 @@ class HomeViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) :
     BaseViewModel() {
-    val lat = savedStateHandle.get<String>(LAT) ?: ""
-    val lon = savedStateHandle.get<String>(LON) ?: ""
+    val lat: String = savedStateHandle.get<String>(LAT) ?: ""
+    val lon: String = savedStateHandle.get<String>(LON) ?: ""
     val cnt = CNT
     val etCity = MutableLiveData("")
     private val _weather: MutableLiveData<WeatherResponseModel> = MutableLiveData()
@@ -72,8 +73,8 @@ class HomeViewModel @Inject constructor(
                 )
             },
             success = {
-                _loading.value = false
                 _weather.value = it
+                _loading.value = false
             },
             error = {
                 it
@@ -88,16 +89,19 @@ class HomeViewModel @Inject constructor(
             defaultRepository.getCurrentWeather(lat, lon, units)
         },
             success = {
-                _loading.value = false
                 _weather.value = it
-            }, error = { it }
+                _loading.value = false
+            }, error = {
+                it
+            }
         )
     }
 
     fun getDailyWeather(lat: String, lon: String, cnt: String, units: String) {
         sendRequest(request = {
             _loading.value = true
-            defaultRepository.getDailyWeather(lat, lon, cnt, units) },
+            defaultRepository.getDailyWeather(lat, lon, cnt, units)
+        },
             success = { dailyResponse ->
                 _loading.value = false
                 _dailyWeather.value = listOf(dailyResponse)

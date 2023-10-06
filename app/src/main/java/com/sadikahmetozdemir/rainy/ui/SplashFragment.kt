@@ -8,6 +8,7 @@ import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import android.view.View
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
@@ -39,7 +40,6 @@ class SplashFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.showToast(getString(R.string.ask_permission))
         location = LocationServices.getFusedLocationProviderClient(this.requireActivity())
         dataHelperManager = DataHelperManager(requireContext())
         lifecycleScope.launch(Dispatchers.Main) {
@@ -48,22 +48,59 @@ class SplashFragment :
                 viewModel.toIntro()
                 dataHelperManager.firstAttach()
             } else {
+                checkLocationPermission()
                 if (context?.let { isLocationEnabled(it) } == true) {
-                    lifecycleScope.launch {
+                    lifecycleScope.launch(Dispatchers.Main) {
+                        lat = dataHelperManager.getLatitude()
+                        lon = dataHelperManager.getLongitude()
                         viewModel.toHomePage(
-                            dataHelperManager.getLatitude(),
-                            dataHelperManager.getLongitude()
+                            lat, lon
                         )
                     }
                 } else {
                     showEnableLocationDialog(requireContext())
                 }
             }
+        }
+
+    }
+
+
+    private fun checkLocationPermission() {
+        val fineLocationPermission = PackageManager.PERMISSION_GRANTED ==
+                ActivityCompat.checkSelfPermission(
+                    requireContext(),
+                    android.Manifest.permission.ACCESS_FINE_LOCATION
+                )
+
+        val coarseLocationPermission = PackageManager.PERMISSION_GRANTED ==
+                ActivityCompat.checkSelfPermission(
+                    requireContext(),
+                    android.Manifest.permission.ACCESS_COARSE_LOCATION
+                )
+
+        if (fineLocationPermission && coarseLocationPermission) {
+            if (isLocationEnabled(requireContext())) {
+                val task: Task<Location> = location.lastLocation
+                task.addOnSuccessListener { location ->
+                    if (location != null) {
+                        val lat = location.latitude.toString()
+                        val lon = location.longitude.toString()
+                        lifecycleScope.launch {
+                            dataHelperManager.saveLatitude(lat)
+                            dataHelperManager.saveLongitude(lon)
+                        }
+                    }
+                }
+            } else {
+                showEnableLocationDialog(requireContext())
+            }
         } else {
-            showEnableLocationDialog(this.requireContext())
+            requestLocationPermissions()
         }
     }
-        private fun requestLocationPermissions() {
+
+    private fun requestLocationPermissions() {
         if (shouldShowRequestPermissionRationale(android.Manifest.permission.ACCESS_FINE_LOCATION) || shouldShowRequestPermissionRationale(
                 android.Manifest.permission.ACCESS_COARSE_LOCATION
             )
@@ -139,7 +176,9 @@ class SplashFragment :
         if (context?.let { isLocationEnabled(it) } == true) {
             lifecycleScope.launch(Dispatchers.Main) {
                 delay(2500)
-//                checkLocationPermission()
+                lat = dataHelperManager.getLatitude()
+                lon = dataHelperManager.getLongitude()
+                viewModel.toHomePage(lat, lon)
             }
         }
     }

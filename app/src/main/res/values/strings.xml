@@ -22,7 +22,4 @@
     <string name="next">İleri</string>
     <string name="start">Başla</string>
 
-    <string name="need_permission">Uygulamamızın daha iyi hizmet verebilmesi için konum bilgisine ihtiyaç duyuyoruz.</string>
-    <string name="ask_permission">Konumunuzun açık olduğundan emin olun.</string>
-
 </resources>

@@ -26,10 +26,12 @@ import com.sadikahmetozdemir.rainy.base.BaseFragment
 import com.sadikahmetozdemir.rainy.core.shared.remote.IntroModel
 import com.sadikahmetozdemir.rainy.databinding.FragmentIntroBinding
 import com.sadikahmetozdemir.rainy.utils.DataHelperManager
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class IntroFragment : BaseFragment<FragmentIntroBinding, IntroViewModel>(R.layout.fragment_intro) {
     lateinit var location: FusedLocationProviderClient
     lateinit var dataHelperManager: DataHelperManager

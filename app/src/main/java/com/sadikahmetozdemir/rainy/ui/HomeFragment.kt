@@ -23,11 +23,11 @@ class HomeFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        var lat = args.lat
+        var lon = args.lon
         homeAdapter.itemClicked = {
             viewModel.getForecastFromRV(it)
         }
-        val lat = args.lat
-        val lon = args.lon
         viewModel.dailyWeather.observe(viewLifecycleOwner) {
             homeAdapter.updateDailyData((it.get(0).list))
         }
