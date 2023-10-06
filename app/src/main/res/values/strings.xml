@@ -14,15 +14,12 @@
     <string name="second_description">İlk olarak, size en güncel hava durumu bilgilerini sunabilmemiz için konum erişimine ihtiyacımız var.</string>
     <string name="terms">Gizlilik sözleşmesi</string>
     <string name="first_description">Merhaba! Hava Durumu Uygulamamıza hoş geldiniz. Size dünya genelindeki güncel hava durumu bilgilerini sunmak için buradayız. Hadi başlayalım ve size uygulamamızın nasıl çalıştığını gösterelim.</string>
-    <string name="need_permission">Hava durumu tahminlerini almak için konum bilgilerinizi kullanıyoruz.
-        Uygulamamızın daha iyi hizmet verebilmesi için konum bilgisine ihtiyaç duyuyoruz.</string>
+    <string name="need_permission">Merhaba!\n\nHava durumu uygulamamız, size güncel ve hassas hava durumu bilgilerini sunmak için arka planda konum bilgisine ihtiyaç duyuyor. Bu bilgilere erişim izni vermeniz, size en doğru hava durumu tahminlerini sunmamıza yardımcı olacak ve günlük hayatınızı kolaylaştıracaktır.\n\nNeden İhtiyaç Duyuyoruz:\n- Size yakın hava durumu bilgilerini anında sunmak için.\n- Seyahat planlarınızı daha iyi yönlendirebilmek için.\n- Güncel hava durumu uyarıları ve tahminleri sağlamak için.\n\nGizlilik: Gizliliğiniz bizim için çok önemli. Konum bilgileriniz sadece hava durumu tahminlerini sunmak için kullanılacak ve başka amaçlar için kullanılmayacaktır.
+        Verileriniz güvende tutulacak ve hiçbir kişisel bilgi paylaşılmayacaktır.</string>
     <string name="ask_permission">Hava durumu tahminlerini almak için konum bilgilerinizi kullanıyoruz.</string>
     <string name="privacy_terms">  <i>Rainy\'e hoşgeldiniz. Rainy uygulaması anlık konumunuza göre hava olaylarını bildirir. Lütfen konumunuzun açık olduğundan emin olun.</i>
     </string>
     <string name="next">İleri</string>
     <string name="start">Başla</string>
-
-    <string name="need_permission">Uygulamamızın daha iyi hizmet verebilmesi için konum bilgisine ihtiyaç duyuyoruz.</string>
-    <string name="ask_permission">Konumunuzun açık olduğundan emin olun.</string>
 
 </resources>

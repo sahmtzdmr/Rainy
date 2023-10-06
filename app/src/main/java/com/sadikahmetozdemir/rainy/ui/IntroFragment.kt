@@ -26,9 +26,12 @@ import com.sadikahmetozdemir.rainy.base.BaseFragment
 import com.sadikahmetozdemir.rainy.core.shared.remote.IntroModel
 import com.sadikahmetozdemir.rainy.databinding.FragmentIntroBinding
 import com.sadikahmetozdemir.rainy.utils.DataHelperManager
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class IntroFragment : BaseFragment<FragmentIntroBinding, IntroViewModel>(R.layout.fragment_intro) {
     lateinit var location: FusedLocationProviderClient
     lateinit var dataHelperManager: DataHelperManager
@@ -45,6 +48,7 @@ class IntroFragment : BaseFragment<FragmentIntroBinding, IntroViewModel>(R.layou
         binding.vpIntro.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
+                checkLocationPermission()
                 if (position == prepareIntroList().size - 1) {
                     binding.btNext.text = getString(R.string.start)
                 } else if (position == prepareIntroList().size - 2) {
@@ -54,7 +58,6 @@ class IntroFragment : BaseFragment<FragmentIntroBinding, IntroViewModel>(R.layou
         binding.btNext.setOnClickListener {
             if (binding.btNext.text == getString(R.string.start) && binding.vpIntro.currentItem == prepareIntroList().size - 1) {
                 if (context?.let { isLocationEnabled(it) } == true) {
-                    checkLocationPermission()
                     lifecycleScope.launch {
                         viewModel.onClickNext(
                             dataHelperManager.getLatitude(),
@@ -99,32 +102,36 @@ class IntroFragment : BaseFragment<FragmentIntroBinding, IntroViewModel>(R.layou
     }
 
     private fun checkLocationPermission() {
-        val task: Task<Location> = location.lastLocation
-        if (this.context?.let {
+        val fineLocationPermission = PackageManager.PERMISSION_GRANTED ==
                 ActivityCompat.checkSelfPermission(
-                    it, android.Manifest.permission.ACCESS_FINE_LOCATION
+                    requireContext(),
+                    android.Manifest.permission.ACCESS_FINE_LOCATION
                 )
-            } != PackageManager.PERMISSION_GRANTED && this.context?.let {
+
+        val coarseLocationPermission = PackageManager.PERMISSION_GRANTED ==
                 ActivityCompat.checkSelfPermission(
-                    it, android.Manifest.permission.ACCESS_COARSE_LOCATION
+                    requireContext(),
+                    android.Manifest.permission.ACCESS_COARSE_LOCATION
                 )
-            } != PackageManager.PERMISSION_GRANTED) {
-            requestLocationPermissions()
 
-        } else {
-            isLocationEnabled(requireContext())
-        }
-        task.addOnSuccessListener {
-            if (it != null) {
-                lat = it.latitude.toString()
-                lon = it.longitude.toString()
-                viewModel.onClickNext(lat, lon)
-                lifecycleScope.launch(Dispatchers.Main) {
-                    dataHelperManager.saveLatitude(it.latitude.toString())
-                    dataHelperManager.saveLongitude(it.longitude.toString())
-
+        if (fineLocationPermission && coarseLocationPermission) {
+            if (isLocationEnabled(requireContext())) {
+                val task: Task<Location> = location.lastLocation
+                task.addOnSuccessListener { location ->
+                    if (location != null) {
+                        val lat = location.latitude.toString()
+                        val lon = location.longitude.toString()
+                        lifecycleScope.launch {
+                            dataHelperManager.saveLatitude(lat)
+                            dataHelperManager.saveLongitude(lon)
+                        }
+                    }
                 }
+            } else {
+                showEnableLocationDialog(requireContext())
             }
+        } else {
+            requestLocationPermissions()
         }
     }
 

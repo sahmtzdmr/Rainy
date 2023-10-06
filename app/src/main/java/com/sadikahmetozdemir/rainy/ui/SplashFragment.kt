@@ -8,6 +8,7 @@ import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import android.view.View
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
@@ -39,58 +40,63 @@ class SplashFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.showToast(getString(R.string.ask_permission))
         location = LocationServices.getFusedLocationProviderClient(this.requireActivity())
         dataHelperManager = DataHelperManager(requireContext())
-        checkLocationPermission()
         lifecycleScope.launch(Dispatchers.Main) {
             delay(2500)
-            if (dataHelperManager.isFirstAttach()){
+            if (dataHelperManager.isFirstAttach()) {
                 viewModel.toIntro()
                 dataHelperManager.firstAttach()
-            }
-            else{
+            } else {
+                checkLocationPermission()
                 if (context?.let { isLocationEnabled(it) } == true) {
-                    lifecycleScope.launch {
-                        checkLocationPermission()
-                        viewModel.toHomePage(dataHelperManager.getLatitude(),dataHelperManager.getLongitude())
+                    lifecycleScope.launch(Dispatchers.Main) {
+                        lat = dataHelperManager.getLatitude()
+                        lon = dataHelperManager.getLongitude()
+                        viewModel.toHomePage(
+                            lat, lon
+                        )
                     }
                 } else {
                     showEnableLocationDialog(requireContext())
                 }
             }
-        } else {
-            showEnableLocationDialog(this.requireContext())
         }
+
     }
 
+
     private fun checkLocationPermission() {
-        val task: Task<Location> = location.lastLocation
-        if (this.context?.let {
+        val fineLocationPermission = PackageManager.PERMISSION_GRANTED ==
                 ActivityCompat.checkSelfPermission(
-                    it, android.Manifest.permission.ACCESS_FINE_LOCATION
+                    requireContext(),
+                    android.Manifest.permission.ACCESS_FINE_LOCATION
                 )
-            } != PackageManager.PERMISSION_GRANTED && this.context?.let {
+
+        val coarseLocationPermission = PackageManager.PERMISSION_GRANTED ==
                 ActivityCompat.checkSelfPermission(
-                    it, android.Manifest.permission.ACCESS_COARSE_LOCATION
+                    requireContext(),
+                    android.Manifest.permission.ACCESS_COARSE_LOCATION
                 )
-            } != PackageManager.PERMISSION_GRANTED) {
-            requestLocationPermissions()
 
-        } else {
-            isLocationEnabled(requireContext())
-        }
-        task.addOnSuccessListener {
-            if (it != null) {
-                lat = it.latitude.toString()
-                lon = it.longitude.toString()
-//                viewModel.toHomePage(lat, lon)
-                lifecycleScope.launch(Dispatchers.Main) {
-                    dataHelperManager.saveLatitude(it.latitude.toString())
-                    dataHelperManager.saveLongitude(it.longitude.toString())
-
+        if (fineLocationPermission && coarseLocationPermission) {
+            if (isLocationEnabled(requireContext())) {
+                val task: Task<Location> = location.lastLocation
+                task.addOnSuccessListener { location ->
+                    if (location != null) {
+                        val lat = location.latitude.toString()
+                        val lon = location.longitude.toString()
+                        lifecycleScope.launch {
+                            dataHelperManager.saveLatitude(lat)
+                            dataHelperManager.saveLongitude(lon)
+                        }
+                    }
                 }
+            } else {
+                showEnableLocationDialog(requireContext())
             }
+        } else {
+            requestLocationPermissions()
         }
     }
 
@@ -157,6 +163,7 @@ class SplashFragment :
 
         }
     }
+
     fun isLocationEnabled(context: Context): Boolean {
         val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
@@ -169,11 +176,12 @@ class SplashFragment :
         if (context?.let { isLocationEnabled(it) } == true) {
             lifecycleScope.launch(Dispatchers.Main) {
                 delay(2500)
-//                checkLocationPermission()
+                lat = dataHelperManager.getLatitude()
+                lon = dataHelperManager.getLongitude()
+                viewModel.toHomePage(lat, lon)
             }
         }
     }
-
 
 
 }

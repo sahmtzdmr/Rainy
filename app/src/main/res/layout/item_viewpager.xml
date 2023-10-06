@@ -35,7 +35,7 @@
             android:gravity="center"
             android:padding="@dimen/margin_16"
             android:textSize="20sp"
-            android:fontFamily="@font/alegreya_italic"
+            android:fontFamily="@font/abril_fatface"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
