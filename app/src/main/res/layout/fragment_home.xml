@@ -156,13 +156,28 @@
                 app:lottie_rawRes="@raw/windy_icon" />
 
             <ProgressBar
-                android:id="@+id/pb_loading"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:id="@+id/progressBar"
+                android:layout_width="1dp"
+                android:layout_height="1dp"
+                android:layout_centerInParent="true"
+                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintEnd_toEndOf="parent"
+                style="?android:attr/progressBarStyleHorizontal" />
+
+            <ImageView
+                android:id="@+id/iconImageView"
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:layout_below="@id/progressBar"
+                android:layout_centerHorizontal="true"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="16dp"
+                android:src="@drawable/ic_rain" />
 
             <LinearLayout
                 android:id="@+id/llDetails"
