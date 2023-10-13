@@ -1,17 +1,21 @@
 package com.sadikahmetozdemir.rainy.ui
 
+import android.content.Context
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.KeyEvent
 import android.view.View
+import android.view.inputmethod.InputMethodManager
+import android.widget.ImageView
 import androidx.navigation.fragment.navArgs
 import com.sadikahmetozdemir.rainy.R
 import com.sadikahmetozdemir.rainy.base.BaseFragment
 import com.sadikahmetozdemir.rainy.databinding.FragmentHomeBinding
-import com.sadikahmetozdemir.rainy.utils.Constants
 import com.sadikahmetozdemir.rainy.utils.adapter.changeWeatherIcon
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Date
 
 @AndroidEntryPoint
 class HomeFragment :
@@ -19,6 +23,7 @@ class HomeFragment :
     private val args: HomeFragmentArgs by navArgs()
 
     private var homeAdapter = HomeAdapter(arrayListOf())
+    val handler = Handler(Looper.getMainLooper())
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -40,11 +45,20 @@ class HomeFragment :
         binding.etSearch.setOnKeyListener { _, keyCode, event ->
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)
                 viewModel.getForecastData()
+            binding.etSearch.text?.clear()
+            hideKeyboard(binding.etSearch)
             return@setOnKeyListener true
         }
         false
 
         initObserve()
+    }
+
+    private fun hideKeyboard(view: View) {
+        val inputMethodManager =
+            requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
+
     }
 
     fun initObserve() {
@@ -67,7 +81,9 @@ class HomeFragment :
         viewModel.loading.observe(viewLifecycleOwner) {
             if (it) {
                 binding.apply {
-                    pbLoading.visibility = View.VISIBLE
+//                    progressBar.visibility = View.VISIBLE
+                    iconImageView.visibility = View.VISIBLE
+                    simulateProgress()
                     etSearch.visibility = View.GONE
                     ivSearch.visibility = View.GONE
                     tvWeather.visibility = View.GONE
@@ -81,7 +97,8 @@ class HomeFragment :
                 }
             } else {
                 binding.apply {
-                    pbLoading.visibility = View.GONE
+                    progressBar.visibility = View.GONE
+                    iconImageView.visibility = View.GONE
                     etSearch.visibility = View.VISIBLE
                     ivSearch.visibility = View.VISIBLE
                     tvWeather.visibility = View.VISIBLE
@@ -97,18 +114,71 @@ class HomeFragment :
         }
     }
 
-    fun getDate(): String {
-        val dateFormat = SimpleDateFormat("dd/MM/yyyy")
-        val currentDate = Date()
-        val formattedDate = dateFormat.format(currentDate)
-        return formattedDate
+    fun setImage(imageView: ImageView, resource: Int) {
+        imageView.setImageResource(resource)
     }
 
-    fun getTime(): String {
-        val timeFormat = SimpleDateFormat("HH:mm:ss")
-        val currentTime = Date()
-        val formattedTime = timeFormat.format(currentTime)
-        return formattedTime
+
+    fun updateProgressBar(value: Int) {
+        binding.progressBar.progress = value
+
+        when (value) {
+            in 0..5 -> setImage(binding.iconImageView, R.drawable.ic_snow)
+            in 5..10 -> setImage(binding.iconImageView, R.drawable.ic_rain)
+            in 10..15 -> setImage(binding.iconImageView, R.drawable.ic_moon)
+            in 15..20 -> setImage(binding.iconImageView, R.drawable.ic_rainbow)
+            in 20..25 -> setImage(binding.iconImageView, R.drawable.ic_snow)
+            in 25..30 -> setImage(binding.iconImageView, R.drawable.ic_rain)
+            in 30..35 -> setImage(binding.iconImageView, R.drawable.ic_moon)
+            in 35..40 -> setImage(binding.iconImageView, R.drawable.ic_rainbow)
+            in 40..45 -> setImage(binding.iconImageView, R.drawable.ic_snow)
+            in 45..50 -> setImage(binding.iconImageView, R.drawable.ic_rain)
+            in 50..55 -> setImage(binding.iconImageView, R.drawable.ic_moon)
+            in 55..60 -> setImage(binding.iconImageView, R.drawable.ic_rainbow)
+            in 60..65 -> setImage(binding.iconImageView, R.drawable.ic_snow)
+            in 65..70 -> setImage(binding.iconImageView, R.drawable.ic_rain)
+            in 70..75 -> setImage(binding.iconImageView, R.drawable.ic_moon)
+            in 75..80 -> setImage(binding.iconImageView, R.drawable.ic_rainbow)
+            in 80..85 -> setImage(binding.iconImageView, R.drawable.ic_snow)
+            in 85..90 -> setImage(binding.iconImageView, R.drawable.ic_rain)
+            in 90..95 -> setImage(binding.iconImageView, R.drawable.ic_moon)
+            in 95..100 -> setImage(binding.iconImageView, R.drawable.ic_rainbow)
+
+            else -> binding.iconImageView.setImageResource(0)
+        }
 
     }
+
+    // İlerleme çubuğunu simüle eden bir işlev
+    fun simulateProgress() {
+        var value = 0
+        val interval = 50 // Her 100 milisaniyede bir güncelle
+        val maxProgress = 100
+
+        handler.postDelayed(object : Runnable {
+            override fun run() {
+                if (value < maxProgress) {
+                    value++
+                    updateProgressBar(value)
+                    handler.postDelayed(this, interval.toLong())
+                }
+            }
+        }, interval.toLong())
+    }
+
+}
+
+fun getDate(): String {
+    val dateFormat = SimpleDateFormat("dd/MM/yyyy")
+    val currentDate = Date()
+    val formattedDate = dateFormat.format(currentDate)
+    return formattedDate
+}
+
+fun getTime(): String {
+    val timeFormat = SimpleDateFormat("HH:mm:ss")
+    val currentTime = Date()
+    val formattedTime = timeFormat.format(currentTime)
+    return formattedTime
+
 }

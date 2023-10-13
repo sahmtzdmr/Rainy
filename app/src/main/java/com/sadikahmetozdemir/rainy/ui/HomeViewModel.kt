@@ -1,5 +1,9 @@
 package com.sadikahmetozdemir.rainy.ui
 
+import android.app.Application
+import android.content.Context
+import android.view.View
+import android.view.inputmethod.InputMethodManager
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -12,6 +16,8 @@ import com.sadikahmetozdemir.rainy.utils.Constants
 import com.sadikahmetozdemir.rainy.utils.DataHelperManager
 import com.sadikahmetozdemir.rainy.utils.SharedPreferenceStorage
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import sadikahmetozdemir.rainy.core.shared.remote.daily.DailyWeatherResponse
 import javax.inject.Inject
@@ -56,7 +62,6 @@ class HomeViewModel @Inject constructor(
                 it
             }
         )
-
     }
 
     fun getForecastData() = viewModelScope.launch {

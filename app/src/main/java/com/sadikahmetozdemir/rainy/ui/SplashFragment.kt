@@ -6,10 +6,13 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -43,24 +46,30 @@ class SplashFragment :
         location = LocationServices.getFusedLocationProviderClient(this.requireActivity())
         dataHelperManager = DataHelperManager(requireContext())
         lifecycleScope.launch(Dispatchers.Main) {
-            delay(2500)
-            if (dataHelperManager.isFirstAttach()) {
-                viewModel.toIntro()
-                dataHelperManager.firstAttach()
-            } else {
-                checkLocationPermission()
-                if (context?.let { isLocationEnabled(it) } == true) {
-                    lifecycleScope.launch(Dispatchers.Main) {
-                        lat = dataHelperManager.getLatitude()
-                        lon = dataHelperManager.getLongitude()
-                        viewModel.toHomePage(
-                            lat, lon
-                        )
-                    }
+            if (isInternetAvailable(requireContext())){
+                delay(2500)
+                if (dataHelperManager.isFirstAttach()) {
+                    viewModel.toIntro()
+                    dataHelperManager.firstAttach()
                 } else {
-                    showEnableLocationDialog(requireContext())
+                    checkLocationPermission()
+                    if (context?.let { isLocationEnabled(it) } == true) {
+                        lifecycleScope.launch(Dispatchers.Main) {
+                            lat = dataHelperManager.getLatitude()
+                            lon = dataHelperManager.getLongitude()
+                            viewModel.toHomePage(
+                                lat, lon
+                            )
+                        }
+                    } else {
+                        showEnableLocationDialog(requireContext())
+                    }
                 }
             }
+            else{
+                Toast.makeText(requireContext(), "İnternet bağlantınızı kontrol edin ve uygulamayı yeniden başlatın.", Toast.LENGTH_SHORT).show()
+            }
+
         }
 
     }
@@ -118,6 +127,11 @@ class SplashFragment :
                 ), LOCATION_PERMISSION_REQUEST_CODE
             )
         }
+    }
+    fun isInternetAvailable(context: Context): Boolean {
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val activeNetworkInfo: NetworkInfo? = connectivityManager.activeNetworkInfo
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected
     }
 
 
