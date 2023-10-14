@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.MyApp.MySplash" parent="Theme.SplashScreen">
+    <style name="Theme.AppCompat.MySplash." parent="Theme.AppCompat">
         <item name="windowSplashScreenBackground">@color/russian_violet</item>
         <item name="windowSplashScreenAnimatedIcon">@drawable/rainy_logo</item>
-        <item name="postSplashScreenTheme">@style/Theme.AppCompat.DayNight.NoActionBar</item>
+        <item name="postSplashScreenTheme">@style/Theme.AppCompat</item>
 
     </style>
 

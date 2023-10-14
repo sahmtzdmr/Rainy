@@ -14,6 +14,7 @@ import com.sadikahmetozdemir.rainy.base.BaseFragment
 import com.sadikahmetozdemir.rainy.databinding.FragmentHomeBinding
 import com.sadikahmetozdemir.rainy.utils.adapter.changeWeatherIcon
 import dagger.hilt.android.AndroidEntryPoint
+import java.lang.RuntimeException
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -21,7 +22,6 @@ import java.util.Date
 class HomeFragment :
     BaseFragment<FragmentHomeBinding, HomeViewModel>(R.layout.fragment_home) {
     private val args: HomeFragmentArgs by navArgs()
-
     private var homeAdapter = HomeAdapter(arrayListOf())
     val handler = Handler(Looper.getMainLooper())
 
@@ -48,12 +48,17 @@ class HomeFragment :
             binding.etSearch.text?.clear()
             hideKeyboard(binding.etSearch)
             return@setOnKeyListener true
+            throw RuntimeException("Test Crash")
         }
         false
 
         initObserve()
     }
 
+    override fun onResume() {
+        super.onResume()
+
+    }
     private fun hideKeyboard(view: View) {
         val inputMethodManager =
             requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
