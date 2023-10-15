@@ -1,6 +1,5 @@
 package com.sadikahmetozdemir.rainy.ui
 
-import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -10,9 +9,9 @@ import android.net.ConnectivityManager
 import android.net.NetworkInfo
 import android.os.Bundle
 import android.provider.Settings
-import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -20,8 +19,6 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.Task
 import com.sadikahmetozdemir.rainy.R
 import com.sadikahmetozdemir.rainy.base.BaseFragment
-import com.sadikahmetozdemir.rainy.base.BaseViewEvent
-import com.sadikahmetozdemir.rainy.base.BaseViewEvent.ShowToast
 import com.sadikahmetozdemir.rainy.databinding.FragmentSplashBinding
 import com.sadikahmetozdemir.rainy.utils.DataHelperManager
 import dagger.hilt.android.AndroidEntryPoint
@@ -46,7 +43,7 @@ class SplashFragment :
         location = LocationServices.getFusedLocationProviderClient(this.requireActivity())
         dataHelperManager = DataHelperManager(requireContext())
         lifecycleScope.launch(Dispatchers.Main) {
-            if (isInternetAvailable(requireContext())){
+            if (isInternetAvailable(requireContext())) {
                 delay(2500)
                 if (dataHelperManager.isFirstAttach()) {
                     viewModel.toIntro()
@@ -65,9 +62,12 @@ class SplashFragment :
                         showEnableLocationDialog(requireContext())
                     }
                 }
-            }
-            else{
-                Toast.makeText(requireContext(), "İnternet bağlantınızı kontrol edin ve uygulamayı yeniden başlatın.", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(
+                    requireContext(),
+                    "İnternet bağlantınızı kontrol edin ve uygulamayı yeniden başlatın.",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
 
         }
@@ -128,8 +128,10 @@ class SplashFragment :
             )
         }
     }
+
     fun isInternetAvailable(context: Context): Boolean {
-        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val activeNetworkInfo: NetworkInfo? = connectivityManager.activeNetworkInfo
         return activeNetworkInfo != null && activeNetworkInfo.isConnected
     }
