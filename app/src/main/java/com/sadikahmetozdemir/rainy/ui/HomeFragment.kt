@@ -1,6 +1,9 @@
 package com.sadikahmetozdemir.rainy.ui
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -14,7 +17,6 @@ import com.sadikahmetozdemir.rainy.base.BaseFragment
 import com.sadikahmetozdemir.rainy.databinding.FragmentHomeBinding
 import com.sadikahmetozdemir.rainy.utils.adapter.changeWeatherIcon
 import dagger.hilt.android.AndroidEntryPoint
-import java.lang.RuntimeException
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -36,6 +38,8 @@ class HomeFragment :
         viewModel.dailyWeather.observe(viewLifecycleOwner) {
             homeAdapter.updateDailyData((it.get(0).list))
         }
+        binding.ivShare.setOnClickListener {
+        }
 
         binding.apply {
             rvChildItem.adapter = homeAdapter
@@ -55,10 +59,19 @@ class HomeFragment :
         initObserve()
     }
 
-    override fun onResume() {
-        super.onResume()
-
+    fun takeScreenshotOfView(view: View, height: Int, width: Int): Bitmap {
+        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        val bgDrawable = view.background
+        if (bgDrawable != null) {
+            bgDrawable.draw(canvas)
+        } else {
+            canvas.drawColor(Color.WHITE)
+        }
+        view.draw(canvas)
+        return bitmap
     }
+
     private fun hideKeyboard(view: View) {
         val inputMethodManager =
             requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager

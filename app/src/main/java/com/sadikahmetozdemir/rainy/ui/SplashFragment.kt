@@ -1,5 +1,7 @@
 package com.sadikahmetozdemir.rainy.ui
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -12,7 +14,7 @@ import android.provider.Settings
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
-import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -26,16 +28,19 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+
 @AndroidEntryPoint
 class SplashFragment :
-    BaseFragment<FragmentSplashBinding, SplashViewModel>(R.layout.fragment_splash) {
+    BaseFragment<FragmentSplashBinding, SplashViewModel>(R.layout.fragment_splash),
+    PermissionManager {
     lateinit var location: FusedLocationProviderClient
-    private var isLocationDialogShowing = false
+    private var isLocationDialogShowing = true
     lateinit var dataHelperManager: DataHelperManager
 
     var lat: String = ""
     var lon: String = ""
     private val LOCATION_PERMISSION_REQUEST_CODE = 1
+    private val STORAGE_PERMISSION_CODE = 23
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -43,6 +48,7 @@ class SplashFragment :
         location = LocationServices.getFusedLocationProviderClient(this.requireActivity())
         dataHelperManager = DataHelperManager(requireContext())
         lifecycleScope.launch(Dispatchers.Main) {
+            checkStoragePermission()
             if (isInternetAvailable(requireContext())) {
                 delay(2500)
                 if (dataHelperManager.isFirstAttach()) {
@@ -50,6 +56,8 @@ class SplashFragment :
                     dataHelperManager.firstAttach()
                 } else {
                     checkLocationPermission()
+                    checkStoragePermission()
+
                     if (context?.let { isLocationEnabled(it) } == true) {
                         lifecycleScope.launch(Dispatchers.Main) {
                             lat = dataHelperManager.getLatitude()
@@ -74,71 +82,103 @@ class SplashFragment :
 
     }
 
+    override fun onStoragePermissionGranted() {
+//        Toast.makeText(requireContext(), "grantedSt", Toast.LENGTH_SHORT).show()
+    }
 
-    private fun checkLocationPermission() {
-        val fineLocationPermission = PackageManager.PERMISSION_GRANTED ==
-                ActivityCompat.checkSelfPermission(
-                    requireContext(),
-                    android.Manifest.permission.ACCESS_FINE_LOCATION
-                )
+    override fun onStoragePermissionDenied() {
+//        Toast.makeText(requireContext(), "deniedstor", Toast.LENGTH_SHORT).show()
+    }
 
-        val coarseLocationPermission = PackageManager.PERMISSION_GRANTED ==
-                ActivityCompat.checkSelfPermission(
-                    requireContext(),
-                    android.Manifest.permission.ACCESS_COARSE_LOCATION
-                )
-
-        if (fineLocationPermission && coarseLocationPermission) {
-            if (isLocationEnabled(requireContext())) {
-                val task: Task<Location> = location.lastLocation
-                task.addOnSuccessListener { location ->
-                    if (location != null) {
-                        val lat = location.latitude.toString()
-                        val lon = location.longitude.toString()
-                        lifecycleScope.launch {
-                            dataHelperManager.saveLatitude(lat)
-                            dataHelperManager.saveLongitude(lon)
-                        }
+    @SuppressLint("MissingPermission")
+    override fun onLocationPermissionGranted() {
+        if (isLocationEnabled(requireContext())) {
+            val task: Task<Location> = location.lastLocation
+            task.addOnSuccessListener { location ->
+                if (location != null) {
+                    val lat = location.latitude.toString()
+                    val lon = location.longitude.toString()
+                    lifecycleScope.launch {
+                        dataHelperManager.saveLatitude(lat)
+                        dataHelperManager.saveLongitude(lon)
                     }
                 }
-            } else {
-                showEnableLocationDialog(requireContext())
             }
+        } else {
+            showEnableLocationDialog(requireContext())
+        }
+    }
+
+    override fun onLocationPermissionDenied() {
+        Toast.makeText(requireContext(), "Konumunuzun hava olaylarını görmek için ayarlardan konum izni veriniz.", Toast.LENGTH_SHORT).show()
+    }
+
+
+    override fun checkLocationPermission() {
+        if (hasLocationPermission()) {
+            onLocationPermissionGranted()
         } else {
             requestLocationPermissions()
         }
     }
+    fun hasStoragePermission(): Boolean {
+        val storageWrPermission = Manifest.permission.WRITE_EXTERNAL_STORAGE
+        val storageReadPermission = Manifest.permission.READ_EXTERNAL_STORAGE
+        val permissionWrStatus =
+            ContextCompat.checkSelfPermission(requireContext(), storageWrPermission)
+        val permissionReadStatus =
+            ContextCompat.checkSelfPermission(requireContext(), storageReadPermission)
+        return (permissionWrStatus == PackageManager.PERMISSION_GRANTED) && (permissionReadStatus == PackageManager.PERMISSION_GRANTED)
 
-    private fun requestLocationPermissions() {
-        if (shouldShowRequestPermissionRationale(android.Manifest.permission.ACCESS_FINE_LOCATION) || shouldShowRequestPermissionRationale(
-                android.Manifest.permission.ACCESS_COARSE_LOCATION
-            )
-        ) {
-            if (!isLocationDialogShowing) {
-                showEnableLocationDialog(requireContext())
-                isLocationDialogShowing = true
-            }
+    }
 
+    override fun checkStoragePermission() {
+        if (hasStoragePermission()) {
+            onStoragePermissionGranted()
         } else {
-            requestPermissions(
-                arrayOf(
-                    android.Manifest.permission.ACCESS_FINE_LOCATION,
-                    android.Manifest.permission.ACCESS_COARSE_LOCATION
-                ), LOCATION_PERMISSION_REQUEST_CODE
-            )
+            requestStoragePermissions()
         }
     }
 
-    fun isInternetAvailable(context: Context): Boolean {
-        val connectivityManager =
-            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val activeNetworkInfo: NetworkInfo? = connectivityManager.activeNetworkInfo
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected
+    override fun requestLocationPermissions() {
+        lifecycleScope.launch(Dispatchers.Main){
+            if (!shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) || !shouldShowRequestPermissionRationale(
+                    Manifest.permission.ACCESS_COARSE_LOCATION))
+            {
+                if(!dataHelperManager.isFirstAttach()){
+                requestPermissions(
+                    arrayOf(
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                    ), LOCATION_PERMISSION_REQUEST_CODE
+                )
+            }
+                else{
+                }
+
+            }
+        }
+
     }
 
 
-    fun showEnableLocationDialog(context: Context) {
-        isLocationDialogShowing
+    override fun requestStoragePermissions() {
+        if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE) || shouldShowRequestPermissionRationale(
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            )
+        ) {
+            requestPermissions(
+                arrayOf(
+                    Manifest.permission.MANAGE_EXTERNAL_STORAGE,
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+                ), STORAGE_PERMISSION_CODE
+            )
+        } else {
+//            Toast.makeText(requireContext(), "asdasdas", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    override fun showEnableLocationDialog(context: Context) {
         val explain = R.string.need_permission
         val alertDialog =
             AlertDialog.Builder(context).setTitle("Konum Hizmetleri").setCancelable(false)
@@ -167,37 +207,89 @@ class SplashFragment :
 
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int, permissions: Array<out String>, grantResults: IntArray
-    ) {
+    override fun showEnableStorageDialog(context: Context) {
+        val builder = AlertDialog.Builder(context).setTitle("Veri İzni").setCancelable(false)
+            .setMessage(getString(R.string.data_permission))
+            .setPositiveButton("Ayarlar") { dialog, _ ->
+                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                context.startActivity(intent)
+                dialog.dismiss()
+            }.setNegativeButton("İptal") { dialog, _ -> dialog.dismiss() }
+            .setCancelable(false)
+            .create()
 
-        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                isLocationEnabled(requireContext())
-            }
-            super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        builder.show()
 
-        }
     }
 
-    fun isLocationEnabled(context: Context): Boolean {
+    override fun isLocationEnabled(context: Context): Boolean {
         val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
             LocationManager.NETWORK_PROVIDER
         )
+
+    }
+
+    fun hasLocationPermission(): Boolean {
+
+        val coarseLocationPermissionStatus = ContextCompat.checkSelfPermission(
+            requireContext(),
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        )
+        val fineLocationPermissionStatus = ContextCompat.checkSelfPermission(
+            requireContext(),
+            Manifest.permission.ACCESS_FINE_LOCATION
+        )
+        return (coarseLocationPermissionStatus == PackageManager.PERMISSION_GRANTED) && (fineLocationPermissionStatus == PackageManager.PERMISSION_GRANTED)
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        when (requestCode) {
+            LOCATION_PERMISSION_REQUEST_CODE -> if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                onLocationPermissionGranted()
+            } else {
+                onLocationPermissionDenied()
+            }
+
+            STORAGE_PERMISSION_CODE -> if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                onStoragePermissionGranted()
+            } else {
+                onStoragePermissionDenied()
+            }
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+
+    }
+
+
+    fun isInternetAvailable(context: Context): Boolean {
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val activeNetworkInfo: NetworkInfo? = connectivityManager.activeNetworkInfo
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected
     }
 
     override fun onResume() {
         super.onResume()
-        if (context?.let { isLocationEnabled(it) } == true) {
-            lifecycleScope.launch(Dispatchers.Main) {
-                delay(2500)
-                lat = dataHelperManager.getLatitude()
-                lon = dataHelperManager.getLongitude()
-                viewModel.toHomePage(lat, lon)
+        lifecycleScope.launch {
+            if (dataHelperManager.isFirstAttach()) {
+                viewModel.toIntro()
+                dataHelperManager.firstAttach()
+            } else if (context?.let { isLocationEnabled(it) } == true) {
+                checkLocationPermission()
+                lifecycleScope.launch(Dispatchers.Main) {
+                    delay(2500)
+                    lat = dataHelperManager.getLatitude()
+                    lon = dataHelperManager.getLongitude()
+                    viewModel.toHomePage(lat, lon)
+                }
             }
         }
+
     }
-
-
 }

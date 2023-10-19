@@ -90,4 +90,5 @@ abstract class BaseFragment<VDB : ViewDataBinding, VM : BaseViewModel> construct
         super.onDestroyView()
         _binding = null
     }
+
 }

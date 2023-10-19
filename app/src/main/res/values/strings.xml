@@ -19,6 +19,7 @@
     <string name="ask_permission">Hava durumu tahminlerini almak için konum bilgilerinizi kullanıyoruz.</string>
     <string name="privacy_terms">  <i>Rainy\'e hoşgeldiniz. Rainy uygulaması anlık konumunuza göre hava olaylarını bildirir. Lütfen konumunuzun açık olduğundan emin olun.</i>
     </string>
+    <string name="data_permission"> Data izni</string>
     <string name="next">İleri</string>
     <string name="start">Başla</string>
 
