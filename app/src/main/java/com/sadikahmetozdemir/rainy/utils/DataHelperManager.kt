@@ -31,9 +31,11 @@ class DataHelperManager @Inject constructor(private val context: Context) {
     suspend fun getLongitude(): String = context.dataStore.data.map {
         it[LONGITUDE] ?: "28"
     }.first()
+
     suspend fun isFirstAttach(): Boolean = context.dataStore.data.map {
         it[ATTACH] ?: true
     }.first()
+
     suspend fun firstAttach() {
         context.dataStore.edit {
             it[ATTACH] = false

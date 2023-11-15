@@ -22,5 +22,12 @@
     <string name="data_permission"> Data izni</string>
     <string name="next">İleri</string>
     <string name="start">Başla</string>
+    <string name="type_your_message">Mesajınızı buraya girin...</string>
+    <string name="share">Paylaş</string>
+    <string name="wind_rate">Rüzgar Hızı</string>
+    <string name="humidity_rate">Nem Oranı</string>
+    <string name="temp">Sıcaklık</string>
+    <string name="weather_info">Hava Durumu Bilgileri</string>
+    <string name="share_weather">Hava Durumu Paylaşımı</string>
 
 </resources>

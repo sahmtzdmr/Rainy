@@ -9,6 +9,8 @@ import android.location.Location
 import android.location.LocationManager
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.view.View
@@ -40,7 +42,6 @@ class SplashFragment :
     var lat: String = ""
     var lon: String = ""
     private val LOCATION_PERMISSION_REQUEST_CODE = 1
-    private val STORAGE_PERMISSION_CODE = 23
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -48,7 +49,6 @@ class SplashFragment :
         location = LocationServices.getFusedLocationProviderClient(this.requireActivity())
         dataHelperManager = DataHelperManager(requireContext())
         lifecycleScope.launch(Dispatchers.Main) {
-            checkStoragePermission()
             if (isInternetAvailable(requireContext())) {
                 delay(2500)
                 if (dataHelperManager.isFirstAttach()) {
@@ -56,8 +56,6 @@ class SplashFragment :
                     dataHelperManager.firstAttach()
                 } else {
                     checkLocationPermission()
-                    checkStoragePermission()
-
                     if (context?.let { isLocationEnabled(it) } == true) {
                         lifecycleScope.launch(Dispatchers.Main) {
                             lat = dataHelperManager.getLatitude()
@@ -110,7 +108,11 @@ class SplashFragment :
     }
 
     override fun onLocationPermissionDenied() {
-        Toast.makeText(requireContext(), "Konumunuzun hava olaylarını görmek için ayarlardan konum izni veriniz.", Toast.LENGTH_SHORT).show()
+        Toast.makeText(
+            requireContext(),
+            "Konumunuzun hava olaylarını görmek için ayarlardan konum izni veriniz.",
+            Toast.LENGTH_SHORT
+        ).show()
     }
 
 
@@ -121,39 +123,24 @@ class SplashFragment :
             requestLocationPermissions()
         }
     }
-    fun hasStoragePermission(): Boolean {
-        val storageWrPermission = Manifest.permission.WRITE_EXTERNAL_STORAGE
-        val storageReadPermission = Manifest.permission.READ_EXTERNAL_STORAGE
-        val permissionWrStatus =
-            ContextCompat.checkSelfPermission(requireContext(), storageWrPermission)
-        val permissionReadStatus =
-            ContextCompat.checkSelfPermission(requireContext(), storageReadPermission)
-        return (permissionWrStatus == PackageManager.PERMISSION_GRANTED) && (permissionReadStatus == PackageManager.PERMISSION_GRANTED)
-
-    }
 
     override fun checkStoragePermission() {
-        if (hasStoragePermission()) {
-            onStoragePermissionGranted()
-        } else {
-            requestStoragePermissions()
-        }
     }
 
     override fun requestLocationPermissions() {
-        lifecycleScope.launch(Dispatchers.Main){
+        lifecycleScope.launch(Dispatchers.Main) {
             if (!shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) || !shouldShowRequestPermissionRationale(
-                    Manifest.permission.ACCESS_COARSE_LOCATION))
-            {
-                if(!dataHelperManager.isFirstAttach()){
-                requestPermissions(
-                    arrayOf(
-                        Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.ACCESS_COARSE_LOCATION
-                    ), LOCATION_PERMISSION_REQUEST_CODE
+                    Manifest.permission.ACCESS_COARSE_LOCATION
                 )
-            }
-                else{
+            ) {
+                if (!dataHelperManager.isFirstAttach()) {
+                    requestPermissions(
+                        arrayOf(
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_COARSE_LOCATION
+                        ), LOCATION_PERMISSION_REQUEST_CODE
+                    )
+                } else {
                 }
 
             }
@@ -161,21 +148,7 @@ class SplashFragment :
 
     }
 
-
     override fun requestStoragePermissions() {
-        if (shouldShowRequestPermissionRationale(Manifest.permission.WRITE_EXTERNAL_STORAGE) || shouldShowRequestPermissionRationale(
-                Manifest.permission.READ_EXTERNAL_STORAGE
-            )
-        ) {
-            requestPermissions(
-                arrayOf(
-                    Manifest.permission.MANAGE_EXTERNAL_STORAGE,
-                    Manifest.permission.READ_EXTERNAL_STORAGE
-                ), STORAGE_PERMISSION_CODE
-            )
-        } else {
-//            Toast.makeText(requireContext(), "asdasdas", Toast.LENGTH_SHORT).show()
-        }
     }
 
     override fun showEnableLocationDialog(context: Context) {
@@ -208,18 +181,6 @@ class SplashFragment :
     }
 
     override fun showEnableStorageDialog(context: Context) {
-        val builder = AlertDialog.Builder(context).setTitle("Veri İzni").setCancelable(false)
-            .setMessage(getString(R.string.data_permission))
-            .setPositiveButton("Ayarlar") { dialog, _ ->
-                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                context.startActivity(intent)
-                dialog.dismiss()
-            }.setNegativeButton("İptal") { dialog, _ -> dialog.dismiss() }
-            .setCancelable(false)
-            .create()
-
-        builder.show()
-
     }
 
     override fun isLocationEnabled(context: Context): Boolean {
@@ -253,12 +214,6 @@ class SplashFragment :
                 onLocationPermissionGranted()
             } else {
                 onLocationPermissionDenied()
-            }
-
-            STORAGE_PERMISSION_CODE -> if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                onStoragePermissionGranted()
-            } else {
-                onStoragePermissionDenied()
             }
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
