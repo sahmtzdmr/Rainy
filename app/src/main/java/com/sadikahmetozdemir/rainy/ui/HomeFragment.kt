@@ -70,19 +70,6 @@ class HomeFragment :
         initObserve()
     }
 
-//    fun takeScreenshotOfView(view: View, height: Int, width: Int): Bitmap {
-//        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-//        val canvas = Canvas(bitmap)
-//        val bgDrawable = view.background
-//        if (bgDrawable != null) {
-//            bgDrawable.draw(canvas)
-//        } else {
-//            canvas.drawColor(Color.WHITE)
-//        }
-//        view.draw(canvas)
-//        return bitmap
-//    }
-
     private fun hideKeyboard(view: View) {
         val inputMethodManager =
             requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
