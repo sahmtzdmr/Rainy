@@ -82,7 +82,8 @@ class HomeFragment :
             item.let {
                 binding.tvCityName.text = it.name
                 binding.tvWeather.text = it.weatherItemModel?.get(0)?.description
-                binding.tvDegree.text = it.mainModel?.temp?.toString() + "°C"
+                val tempInt=it.mainModel?.temp?.toInt()
+                binding.tvDegree.text = tempInt.toString()+ "°C"
                 binding.tvRainRate.text = it.mainModel?.humidity.toString() + " %"
                 binding.tvWindSpeed.text = it.windModel?.speed.toString() + " km/h"
                 it.weatherItemModel?.get(0)?.icon?.let { it1 ->
@@ -337,5 +338,6 @@ class HomeFragment :
         return formattedTime
 
     }
+
 }
 

@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.sadikahmetozdemir.rainy.databinding.CustomForecastItemBinding
 import com.sadikahmetozdemir.rainy.utils.adapter.changeWeatherIcon
 import sadikahmetozdemir.rainy.core.shared.remote.daily.DailyWeatherResponse
+import kotlin.math.roundToInt
 
 class HomeAdapter(private val dailyWeatherResponse: ArrayList<DailyWeatherResponse.WeatherList>) :
     RecyclerView.Adapter<HomeAdapter.ViewHolder>() {
@@ -32,7 +33,8 @@ class HomeAdapter(private val dailyWeatherResponse: ArrayList<DailyWeatherRespon
                     item.name?.let { it1 -> itemClicked?.invoke(it1) }
                 }
                 lavChildWeather.changeWeatherIcon(item.weather.get(0).icon.toString())
-                tvChildDegree.text = item.main?.temp?.toString() + "°C"
+                val tempInt = item.main?.temp?.roundToInt()
+                tvChildDegree.text = tempInt.toString() + "°C"
             }
         }
     }
