@@ -6,10 +6,13 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
-class SplashViewModel @Inject constructor(private var defaultRepository: DefaultRepository) :
+class SplashViewModel @Inject constructor() :
     BaseViewModel() {
     fun toHomePage(lat: String, lon: String) {
         navigate(SplashFragmentDirections.actionSplashFragmentToHomeFragment(lat, lon))
+    }
+    fun toIntro(){
+        navigate(SplashFragmentDirections.actionSplashFragmentToIntroFragment())
     }
 
 }

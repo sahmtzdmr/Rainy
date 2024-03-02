@@ -6,16 +6,25 @@ plugins {
     id 'dagger.hilt.android.plugin'
     id 'androidx.navigation.safeargs.kotlin'
     id 'kotlin-parcelize'
+    id 'com.google.gms.google-services'
 }
 
 android {
+    signingConfigs {
+        release {
+            storeFile file('C:\\Users\\S\\StudioProjects\\Rainy\\jks\\keystore.jks')
+            storePassword 'Rainy.'
+            keyAlias 'key0'
+            keyPassword 'Rainy.'
+        }
+    }
     compileSdk 33
 
     defaultConfig {
         applicationId "com.sadikahmetozdemir.rainy"
         minSdk 21
         targetSdk 33
-        versionCode 6
+        versionCode 10
         versionName "1.0.0"
 
 
@@ -63,6 +72,9 @@ dependencies {
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
     implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
 
+    //Firebase
+    implementation(platform("com.google.firebase:firebase-bom:32.3.1"))
+
     //Dagger Hilt
     implementation "com.google.dagger:hilt-android:2.38.1"
     kapt "com.google.dagger:hilt-compiler:2.39.1"
@@ -86,5 +98,8 @@ dependencies {
     implementation "androidx.core:core-splashscreen:1.0.0"
     //Location
     implementation 'com.google.android.gms:play-services-location:21.0.1'
+    
+    //indicator
+//    implementation 'com.tbuonomo:dotsindicator:5.0'
 
 }

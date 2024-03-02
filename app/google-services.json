@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "173921177810",
+    "project_id": "rainy-f4eeb",
+    "storage_bucket": "rainy-f4eeb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:173921177810:android:4e88ebe3799098f7d99d0b",
+        "android_client_info": {
+          "package_name": "com.sadikahmetozdemir.rainy"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCZHO2XKo8XT8vRfaICiWwckRW3um-nEqY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

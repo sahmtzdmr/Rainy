@@ -34,6 +34,7 @@ object AppModule {
     @Singleton
     fun provideWeatherService(retrofitClient: Retrofit) =
         retrofitClient.create(WeatherAPI::class.java)
+
     @Provides
     fun provideDataManager(@ApplicationContext context: Context): DataHelperManager {
         return DataHelperManager(context)
@@ -48,11 +49,13 @@ object AppModule {
             .addInterceptor(networkInterceptor)
             .build()
     }
+
     @Provides
     @Singleton
     fun provideDefaultRepository(
         weatherAPI: WeatherAPI
-    ): DefaultRepository{
-return DefaultRepository(weatherAPI)
+    ): DefaultRepository {
+        return DefaultRepository(weatherAPI)
     }
 }
+

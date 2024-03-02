@@ -6,6 +6,28 @@
     <string name="wind_speed">%1$d km/h</string>
     <string name="rain_rate">%1$d %</string>
     <string name="text_action">Tamam</string>
-    <string name="need_permission">Uygulamamızın daha iyi hizmet verebilmesi için konum bilgisine ihtiyaç duyuyoruz.</string>
-    <string name="ask_permission">Konumunuzun açık olduğundan emin olun.</string>
+
+    <string name="walktrough_one">Rainy\'e Hoşgeldiniz</string>
+    <string name="walktrough_second">Konum Erişimi</string>
+    <string name="walktrough_third">Uygulamayı Kullanmaya Başlayın</string>
+    <string name="third_description">Hava Durumu Uygulamamızı kullanmaya başlayabilirsiniz! İstediğiniz zaman güncel hava durumu bilgilerini kontrol edebilirsiniz. Herhangi bir sorunuz veya geri bildiriminiz varsa, lütfen bize bildirin. Keyifli kullanımlar!</string>
+    <string name="second_description">İlk olarak, size en güncel hava durumu bilgilerini sunabilmemiz için konum erişimine ihtiyacımız var.</string>
+    <string name="terms">Gizlilik sözleşmesi</string>
+    <string name="first_description">Merhaba! Hava Durumu Uygulamamıza hoş geldiniz. Size dünya genelindeki güncel hava durumu bilgilerini sunmak için buradayız. Hadi başlayalım ve size uygulamamızın nasıl çalıştığını gösterelim.</string>
+    <string name="need_permission">Merhaba!\n\nHava durumu uygulamamız, size güncel ve hassas hava durumu bilgilerini sunmak için arka planda konum bilgisine ihtiyaç duyuyor. Bu bilgilere erişim izni vermeniz, size en doğru hava durumu tahminlerini sunmamıza yardımcı olacak ve günlük hayatınızı kolaylaştıracaktır.\n\nNeden İhtiyaç Duyuyoruz:\n- Size yakın hava durumu bilgilerini anında sunmak için.\n- Seyahat planlarınızı daha iyi yönlendirebilmek için.\n- Güncel hava durumu uyarıları ve tahminleri sağlamak için.\n\nGizlilik: Gizliliğiniz bizim için çok önemli. Konum bilgileriniz sadece hava durumu tahminlerini sunmak için kullanılacak ve başka amaçlar için kullanılmayacaktır.
+        Verileriniz güvende tutulacak ve hiçbir kişisel bilgi paylaşılmayacaktır.</string>
+    <string name="ask_permission">Hava durumu tahminlerini almak için konum bilgilerinizi kullanıyoruz.</string>
+    <string name="privacy_terms">  <i>Rainy\'e hoşgeldiniz. Rainy uygulaması anlık konumunuza göre hava olaylarını bildirir. Lütfen konumunuzun açık olduğundan emin olun.</i>
+    </string>
+    <string name="data_permission"> Data izni</string>
+    <string name="next">İleri</string>
+    <string name="start">Başla</string>
+    <string name="type_your_message">Mesajınızı buraya girin...</string>
+    <string name="share">Paylaş</string>
+    <string name="wind_rate">Rüzgar Hızı</string>
+    <string name="humidity_rate">Nem Oranı</string>
+    <string name="temp">Sıcaklık</string>
+    <string name="weather_info">Hava Durumu Bilgileri</string>
+    <string name="share_weather">Hava Durumu Paylaşımı</string>
+
 </resources>

@@ -1,5 +1,10 @@
 package com.sadikahmetozdemir.rainy.base
 
+import android.app.Application
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavDirections
@@ -31,7 +36,6 @@ abstract class BaseViewModel : ViewModel() {
             baseEvent.postValue(BaseViewEvent.ShowToast(message))
         }
     }
-
     fun handleException(exception: Exception) {
         when (exception) {
 //            is SimpleHttpException -> {
