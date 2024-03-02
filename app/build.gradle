@@ -10,13 +10,21 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        release {
+            storeFile file('C:\\Users\\S\\StudioProjects\\Rainy\\jks\\keystore.jks')
+            storePassword 'Rainy.'
+            keyAlias 'key0'
+            keyPassword 'Rainy.'
+        }
+    }
     compileSdk 33
 
     defaultConfig {
         applicationId "com.sadikahmetozdemir.rainy"
         minSdk 21
         targetSdk 33
-        versionCode 9
+        versionCode 10
         versionName "1.0.0"
 
 

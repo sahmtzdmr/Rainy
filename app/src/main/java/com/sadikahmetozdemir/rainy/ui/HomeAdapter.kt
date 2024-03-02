@@ -40,7 +40,7 @@ class HomeAdapter(private val dailyWeatherResponse: ArrayList<DailyWeatherRespon
     }
 
     override fun getItemCount(): Int {
-        return dailyWeatherResponse.size
+                return dailyWeatherResponse.size
     }
 
     fun updateDailyData(dailyData: List<DailyWeatherResponse.WeatherList>) {
