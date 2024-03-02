@@ -185,6 +185,7 @@ class IntroFragment : BaseFragment<FragmentIntroBinding, IntroViewModel>(R.layou
 
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onRequestPermissionsResult(
         requestCode: Int, permissions: Array<out String>, grantResults: IntArray
     ) {
@@ -193,9 +194,6 @@ class IntroFragment : BaseFragment<FragmentIntroBinding, IntroViewModel>(R.layou
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 isLocationEnabled(requireContext())
             } else {
-                Toast.makeText(
-                    context, context?.getText(R.string.need_permission), Toast.LENGTH_SHORT
-                ).show()
 
             }
             super.onRequestPermissionsResult(requestCode, permissions, grantResults)
