@@ -194,7 +194,7 @@ class HomeFragment :
         initObserve()
     }
     override fun onStoragePermissionGranted() {
-        BottomSheetFragment().show(requireActivity().supportFragmentManager,"bs")
+//        BottomSheetFragment().show(requireActivity().supportFragmentManager,"bs")
 
     }
 
