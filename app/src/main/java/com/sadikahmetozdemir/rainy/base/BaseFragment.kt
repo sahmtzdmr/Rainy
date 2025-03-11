@@ -15,16 +15,17 @@ import androidx.navigation.fragment.findNavController
 import com.sadikahmetozdemir.rainy.BR
 import com.sadikahmetozdemir.rainy.core.ui.findGenericSuperclass
 import com.sadikahmetozdemir.rainy.utils.extensions.snackbar
+import java.lang.reflect.ParameterizedType
 
 abstract class BaseFragment<VDB : ViewDataBinding, VM : BaseViewModel> constructor(
     @LayoutRes private val layoutId: Int,
 ) : Fragment() {
     @Suppress("UNCHECKED_CAST")
     val viewModelClass: Class<VM>
-        get() = findGenericSuperclass<BaseFragment<VDB, VM>>()
-            ?.actualTypeArguments
-            ?.getOrNull(1) as? Class<VM>
-            ?: throw IllegalStateException("viewModelClass does not equal Class<VM>")
+        get() {
+            return (javaClass.genericSuperclass as ParameterizedType)
+                .actualTypeArguments[1] as Class<VM>
+        }
     lateinit var viewModel: VM
     private var _binding: VDB? = null
     val binding: VDB get() = _binding!!
