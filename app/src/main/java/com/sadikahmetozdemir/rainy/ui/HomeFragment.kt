@@ -32,11 +32,10 @@ import java.util.Date
 
 @AndroidEntryPoint
 class HomeFragment :
-    BaseFragment<FragmentHomeBinding, HomeViewModel>(R.layout.fragment_home), PermissionManager {
+    BaseFragment<FragmentHomeBinding, HomeViewModel>(R.layout.fragment_home) {
     private val args: HomeFragmentArgs by navArgs()
     private var homeAdapter = HomeAdapter(arrayListOf())
     val handler = Handler(Looper.getMainLooper())
-    private val STORAGE_PERMISSION_CODE = 101
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -48,9 +47,7 @@ class HomeFragment :
         viewModel.dailyWeather.observe(viewLifecycleOwner) {
             homeAdapter.updateDailyData((it.get(0).list))
         }
-        binding.ivShare.setOnClickListener {
-            checkStoragePermission()
-        }
+
 
         binding.apply {
             rvChildItem.adapter = homeAdapter
@@ -141,32 +138,17 @@ class HomeFragment :
     fun updateProgressBar(value: Int) {
         binding.progressBar.progress = value
 
-        when (value) {
-            in 0..5 -> setImage(binding.iconImageView, R.drawable.ic_snow)
-            in 5..10 -> setImage(binding.iconImageView, R.drawable.ic_rain)
-            in 10..15 -> setImage(binding.iconImageView, R.drawable.ic_moon)
-            in 15..20 -> setImage(binding.iconImageView, R.drawable.ic_rainbow)
-            in 20..25 -> setImage(binding.iconImageView, R.drawable.ic_snow)
-            in 25..30 -> setImage(binding.iconImageView, R.drawable.ic_rain)
-            in 30..35 -> setImage(binding.iconImageView, R.drawable.ic_moon)
-            in 35..40 -> setImage(binding.iconImageView, R.drawable.ic_rainbow)
-            in 40..45 -> setImage(binding.iconImageView, R.drawable.ic_snow)
-            in 45..50 -> setImage(binding.iconImageView, R.drawable.ic_rain)
-            in 50..55 -> setImage(binding.iconImageView, R.drawable.ic_moon)
-            in 55..60 -> setImage(binding.iconImageView, R.drawable.ic_rainbow)
-            in 60..65 -> setImage(binding.iconImageView, R.drawable.ic_snow)
-            in 65..70 -> setImage(binding.iconImageView, R.drawable.ic_rain)
-            in 70..75 -> setImage(binding.iconImageView, R.drawable.ic_moon)
-            in 75..80 -> setImage(binding.iconImageView, R.drawable.ic_rainbow)
-            in 80..85 -> setImage(binding.iconImageView, R.drawable.ic_snow)
-            in 85..90 -> setImage(binding.iconImageView, R.drawable.ic_rain)
-            in 90..95 -> setImage(binding.iconImageView, R.drawable.ic_moon)
-            in 95..100 -> setImage(binding.iconImageView, R.drawable.ic_rainbow)
+        val icons = listOf(
+            R.drawable.ic_snow,
+            R.drawable.ic_rain,
+            R.drawable.ic_moon,
+            R.drawable.ic_rainbow
+        )
 
-            else -> binding.iconImageView.setImageResource(0)
-        }
-
+        val index = (value / 5) % icons.size
+        setImage(binding.iconImageView, icons[index])
     }
+
 
     // İlerleme çubuğunu simüle eden bir işlev
     fun simulateProgress() {
@@ -192,135 +174,6 @@ class HomeFragment :
     override fun onResume() {
         super.onResume()
         initObserve()
-    }
-    override fun onStoragePermissionGranted() {
-//        BottomSheetFragment().show(requireActivity().supportFragmentManager,"bs")
-
-    }
-
-    override fun onStoragePermissionDenied() {
-        showEnableStorageDialog(requireContext())
-
-    }
-
-    override fun onLocationPermissionGranted() {
-    }
-
-    override fun onLocationPermissionDenied() {
-    }
-
-    override fun checkLocationPermission() {
-    }
-
-    fun hasStoragePermission(): Boolean {
-        val storageWrPermission = Manifest.permission.WRITE_EXTERNAL_STORAGE
-        val storageReadPermission = Manifest.permission.READ_EXTERNAL_STORAGE
-        val permissionWrStatus =
-            ContextCompat.checkSelfPermission(requireContext(), storageWrPermission)
-        val permissionReadStatus =
-            ContextCompat.checkSelfPermission(requireContext(), storageReadPermission)
-        return (permissionWrStatus == PackageManager.PERMISSION_GRANTED) && (permissionReadStatus == PackageManager.PERMISSION_GRANTED)
-
-    }
-
-    override fun checkStoragePermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            onStoragePermissionGranted()
-        } else {
-            if (hasStoragePermission()) {
-                onStoragePermissionGranted()
-            } else {
-                requestStoragePermissions()
-            }
-        }
-
-    }
-
-    override fun requestLocationPermissions() {
-    }
-
-    override fun requestStoragePermissions() {
-        val permissions = arrayListOf(
-            Manifest.permission.READ_MEDIA_IMAGES
-        )
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-
-        } else {
-            for (permission in permissions) {
-                if (ContextCompat.checkSelfPermission(
-                        requireContext(),
-                        permission
-                    ) != PackageManager.PERMISSION_GRANTED
-                ) {
-                    requestPermissions(
-                        arrayOf(
-                            Manifest.permission.READ_EXTERNAL_STORAGE,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        ),
-                        STORAGE_PERMISSION_CODE
-                    )
-                    return
-                }
-            }
-        }
-
-    }
-
-    override fun showEnableLocationDialog(context: Context) {
-    }
-
-    override fun showEnableStorageDialog(context: Context) {
-        val builder = AlertDialog.Builder(context).setTitle("Veri İzni").setCancelable(false)
-            .setMessage(getString(R.string.data_permission))
-            .setPositiveButton("Ayarlar") { dialog, _ ->
-                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                val uri = Uri.fromParts("package", requireActivity().packageName, null)
-                intent.data = uri
-                startActivity(intent)
-            }.setNegativeButton("İptal") { dialog, _ -> dialog.dismiss() }
-            .setCancelable(false)
-            .create()
-
-        builder.show()
-
-    }
-
-    override fun isLocationEnabled(context: Context): Boolean {
-        return true
-    }
-
-    @Deprecated("Deprecated in Java")
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        when (requestCode) {
-            STORAGE_PERMISSION_CODE -> if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                onStoragePermissionGranted()
-            } else {
-                onStoragePermissionDenied()
-            }
-        }
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-
-    }
-
-    companion object Screenshot {
-        private fun takeScreenshot(view: View): Bitmap {
-            view.isDrawingCacheEnabled = true
-            view.buildDrawingCache(true)
-            val b = Bitmap.createBitmap(view.drawingCache)
-            view.isDrawingCacheEnabled = false
-            return b
-        }
-
-        fun takeScreenshotOfRootView(v: View): Bitmap {
-            return takeScreenshot(v.rootView)
-        }
-
-
     }
 
 

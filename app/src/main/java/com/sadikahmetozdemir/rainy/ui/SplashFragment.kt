@@ -80,14 +80,6 @@ class SplashFragment :
 
     }
 
-    override fun onStoragePermissionGranted() {
-//        Toast.makeText(requireContext(), "grantedSt", Toast.LENGTH_SHORT).show()
-    }
-
-    override fun onStoragePermissionDenied() {
-//        Toast.makeText(requireContext(), "deniedstor", Toast.LENGTH_SHORT).show()
-    }
-
     @SuppressLint("MissingPermission")
     override fun onLocationPermissionGranted() {
         if (isLocationEnabled(requireContext())) {
@@ -123,10 +115,6 @@ class SplashFragment :
             requestLocationPermissions()
         }
     }
-
-    override fun checkStoragePermission() {
-    }
-
     override fun requestLocationPermissions() {
         lifecycleScope.launch(Dispatchers.Main) {
             if (!shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION) || !shouldShowRequestPermissionRationale(
@@ -146,9 +134,6 @@ class SplashFragment :
             }
         }
 
-    }
-
-    override fun requestStoragePermissions() {
     }
 
     override fun showEnableLocationDialog(context: Context) {
@@ -179,10 +164,6 @@ class SplashFragment :
 
 
     }
-
-    override fun showEnableStorageDialog(context: Context) {
-    }
-
     override fun isLocationEnabled(context: Context): Boolean {
         val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
