@@ -33,7 +33,7 @@
     </fragment>
     <fragment
         android:id="@+id/introFragment"
-        android:name="com.sadikahmetozdemir.rainy.ui.IntroFragment"
+        android:name="com.sadikahmetozdemir.rainy.ui.walktrough.IntroFragment"
         android:label="fragment_intro"
         tools:layout="@layout/fragment_intro">
         <action

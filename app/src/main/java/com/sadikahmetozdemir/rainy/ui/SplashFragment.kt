@@ -51,23 +51,24 @@ class SplashFragment :
         lifecycleScope.launch(Dispatchers.Main) {
             if (isInternetAvailable(requireContext())) {
                 delay(2500)
-                if (dataHelperManager.isFirstAttach()) {
-                    viewModel.toIntro()
-                    dataHelperManager.firstAttach()
-                } else {
-                    checkLocationPermission()
-                    if (context?.let { isLocationEnabled(it) } == true) {
-                        lifecycleScope.launch(Dispatchers.Main) {
-                            lat = dataHelperManager.getLatitude()
-                            lon = dataHelperManager.getLongitude()
-                            viewModel.toHomePage(
-                                lat, lon
-                            )
-                        }
-                    } else {
-                        showEnableLocationDialog(requireContext())
-                    }
-                }
+                viewModel.toIntro()
+//                if (dataHelperManager.isFirstAttach()) {
+//                    viewModel.toIntro()
+//                    dataHelperManager.firstAttach()
+//                } else {
+//                    checkLocationPermission()
+//                    if (context?.let { isLocationEnabled(it) } == true) {
+//                        lifecycleScope.launch(Dispatchers.Main) {
+//                            lat = dataHelperManager.getLatitude()
+//                            lon = dataHelperManager.getLongitude()
+//                            viewModel.toHomePage(
+//                                lat, lon
+//                            )
+//                        }
+//                    } else {
+//                        showEnableLocationDialog(requireContext())
+//                    }
+//                }
             } else {
                 Toast.makeText(
                     requireContext(),
