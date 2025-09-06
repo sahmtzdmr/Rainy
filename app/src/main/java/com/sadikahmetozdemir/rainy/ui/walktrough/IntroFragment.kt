@@ -108,7 +108,7 @@ class IntroFragment : BaseFragment<FragmentIntroBinding, IntroViewModel>(R.layou
                 description = getString(R.string.first_description)
             ),
             IntroModel(
-                backgroundId = R.drawable.walkthrough_second_bg,
+                backgroundId = R.drawable.walkthorugh_second_bg,
                 drawableId = R.drawable.walkthrough_second,
                 tittle = getString(R.string.walktrough_second),
                 description = getString(R.string.second_description)

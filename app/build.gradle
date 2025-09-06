@@ -18,13 +18,13 @@ android {
             keyPassword 'Rainy.'
         }
     }
-    compileSdk 34
+    compileSdk 35
 
     defaultConfig {
         applicationId "com.sadikahmetozdemir.rainy"
         minSdk 21
-        targetSdk 34
-        versionCode 14
+        targetSdk 35
+        versionCode 15
         versionName "1.0.2"
 
 
