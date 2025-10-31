@@ -11,6 +11,7 @@ import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
@@ -18,22 +19,26 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.ComposeView
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.Task
 import com.sadikahmetozdemir.rainy.R
 import com.sadikahmetozdemir.rainy.base.BaseFragment
+import com.sadikahmetozdemir.rainy.base.BaseViewEvent
 import com.sadikahmetozdemir.rainy.core.shared.remote.IntroModel
 import com.sadikahmetozdemir.rainy.databinding.FragmentIntroBinding
 import com.sadikahmetozdemir.rainy.utils.DataHelperManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class IntroFragment : BaseFragment<FragmentIntroBinding, IntroViewModel>(R.layout.fragment_intro) {
     lateinit var location: FusedLocationProviderClient
+    @Inject
     lateinit var dataHelperManager: DataHelperManager
 
     var lat: String = ""
@@ -50,9 +55,25 @@ class IntroFragment : BaseFragment<FragmentIntroBinding, IntroViewModel>(R.layou
 
         val composeView = view?.findViewById<ComposeView>(R.id.compose_view)
         composeView?.setContent {
-           val introList=prepareIntroList()
-            IntroScreenWithPager(introList)
+            val introList = prepareIntroList()
+            IntroScreenWithPager(introList) {
+                // burası sadece callback tetikleme
+                if (isLocationEnabled(requireContext())) {
+                    lifecycleScope.launch {
+                        viewModel.onClickNext(
+                            dataHelperManager.getLatitude(),
+                            dataHelperManager.getLongitude()
+                        )
+                        dataHelperManager.firstAttach()
+                    }
+                } else {
+                    showEnableLocationDialog(requireContext())
+                }
+            }
+
         }
+
+
 
         return view
     }
@@ -91,6 +112,21 @@ class IntroFragment : BaseFragment<FragmentIntroBinding, IntroViewModel>(R.layou
 //        }
 //        location = LocationServices.getFusedLocationProviderClient(this.requireActivity())
 //        dataHelperManager = DataHelperManager(requireContext())
+        viewModel.baseEvent.observe(viewLifecycleOwner) { event ->
+            when(event) {
+                is BaseViewEvent.NavigateTo -> {
+                    findNavController().navigate(event.directions)
+                }
+                is BaseViewEvent.ShowMessage -> {
+                    Toast.makeText(requireContext(), event.message, Toast.LENGTH_SHORT).show()
+                }
+                is BaseViewEvent.ShowToast -> {
+                    Toast.makeText(requireContext(), event.message, Toast.LENGTH_SHORT).show()
+                }
+
+                else -> {}
+            }
+        }
     }
 
     override fun shouldUseCompose(): Boolean {

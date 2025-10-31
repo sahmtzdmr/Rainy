@@ -1,5 +1,6 @@
 package com.sadikahmetozdemir.rainy.ui.walktrough
 
+import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -64,6 +66,12 @@ fun WalkThroughTitle(title: String, modifier: Modifier = Modifier) {
 private fun WalkthroughTitlePreview() {
     WalkThroughTitle("Title")
 }
+@Composable
+fun ButtonStart(onClick: () -> Unit) {
+    Button(onClick = { onClick() }) {
+        Text("Devam Et")
+    }
+}
 
 @Composable
 fun WalkThroughDescription(title: String, modifier: Modifier = Modifier) {
@@ -84,59 +92,10 @@ private fun WalkthroughDescriptionPreview() {
 }
 
 @Composable
-fun IntroPrepare(item: IntroModel) {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        item.drawableId?.let { WalkThroughImage(imageResId = it) }
-        item.tittle?.let { WalkThroughTitle(title = it) }
-        item.description?.let { WalkThroughDescription(title = it) }
-    }
-}
-
-@Preview
-@Composable
-private fun IntroPreparePreview() {
-    IntroPrepare(
-        item = IntroModel(
-            R.drawable.walktrough_item_one, R.drawable.walkthorough_third, "description", "sadasdas"
-        )
-    )
-}
-
-@Composable
-fun IntroScreen(item: IntroModel, modifier: Modifier = Modifier) {
-    Box(modifier.fillMaxSize()) {
-        item.backgroundId?.let { painterResource(it) }?.let {
-            Image(painter = it,
-                contentDescription = null,
-                modifier = modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop)
-        }
-        IntroPrepare(
-            item = IntroModel(
-                item.backgroundId, item.drawableId, item.tittle, item.description
-            )
-        )
-    }
-}
-
-@Preview
-@Composable
-private fun IntroScreenPreview() {
-    IntroScreen(
-        IntroModel(
-            backgroundId = R.drawable.walktrough_bg_one,
-            drawableId = R.drawable.walkthorough_third,
-            tittle = "description",
-            description = "sadasdas"
-        )
-    )
-}
-@Composable
-fun IntroScreenWithPager(introItems: List<IntroModel>) {
+fun IntroScreenWithPager(
+    introItems: List<IntroModel>,
+    onFinish: () -> Unit
+) {
     val pagerState = rememberPagerState(pageCount = { introItems.size })
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -144,11 +103,14 @@ fun IntroScreenWithPager(introItems: List<IntroModel>) {
             state = pagerState,
             modifier = Modifier.weight(1f)
         ) { page ->
-            // Her sayfada ilgili IntroModel'i kullanıyoruz
-            IntroScreen(item = introItems[page])
+            IntroScreen(
+                item = introItems[page],
+                isLastPage = page == introItems.lastIndex,
+                onFinish = onFinish
+            )
         }
 
-        // İsteğe bağlı: Sayfa göstergesi (indicator)
+        // indicator
         Row(
             Modifier
                 .fillMaxWidth()
@@ -172,3 +134,50 @@ fun IntroScreenWithPager(introItems: List<IntroModel>) {
     }
 }
 
+@Composable
+fun IntroScreen(
+    item: IntroModel,
+    isLastPage: Boolean,
+    onFinish: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box(modifier.fillMaxSize()) {
+        item.backgroundId?.let { painterResource(it) }?.let {
+            Image(
+                painter = it,
+                contentDescription = null,
+                modifier = modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
+        }
+        IntroPrepare(
+            item = item,
+            isLastPage = isLastPage,
+            onFinish = onFinish
+        )
+    }
+}
+
+@Composable
+fun IntroPrepare(
+    item: IntroModel,
+    isLastPage: Boolean,
+    onFinish: () -> Unit
+) {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        item.drawableId?.let { WalkThroughImage(imageResId = it) }
+        item.tittle?.let { WalkThroughTitle(title = it) }
+        item.description?.let { WalkThroughDescription(title = it) }
+
+        if (isLastPage) {
+            ButtonStart {
+                Log.d("Intro", "Devam butonuna basıldı")
+                onFinish()
+            }
+        }
+    }
+}
