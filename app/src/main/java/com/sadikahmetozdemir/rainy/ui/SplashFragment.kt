@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
 import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.NetworkInfo
 import android.net.Uri
 import android.os.Build
@@ -36,7 +37,7 @@ class SplashFragment :
     BaseFragment<FragmentSplashBinding, SplashViewModel>(R.layout.fragment_splash),
     PermissionManager {
     lateinit var location: FusedLocationProviderClient
-    private var isLocationDialogShowing = true
+    private var isLocationDialogShowing = false
     lateinit var dataHelperManager: DataHelperManager
 
     var lat: String = ""
@@ -138,17 +139,18 @@ class SplashFragment :
     }
 
     override fun showEnableLocationDialog(context: Context) {
-        val explain = R.string.need_permission
+        if (isLocationDialogShowing) return
+        isLocationDialogShowing = true
+        val explain = getString(R.string.need_permission)
         val alertDialog =
             AlertDialog.Builder(context).setTitle("Konum Hizmetleri").setCancelable(false)
                 .setMessage(explain).setPositiveButton("Ayarlar") { dialog, _ ->
                     val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
                     context.startActivity(intent)
-                    !isLocationDialogShowing
-                    if (!isLocationDialogShowing) {
-                        dialog.dismiss()
-                    }
+                    isLocationDialogShowing = false
+                    dialog.dismiss()
                 }.setNegativeButton("İptal") { dialog, _ ->
+                    isLocationDialogShowing = false
                     dataHelperManager = DataHelperManager(requireContext())
                     lifecycleScope.launch(Dispatchers.Default) {
                         lat = dataHelperManager.getLatitude()
@@ -156,10 +158,8 @@ class SplashFragment :
                         viewModel.toHomePage(lat = lat, lon = lon)
                     }
                     dialog.dismiss()
-
                 }
                 .setCancelable(false)
-
                 .create()
         alertDialog.show()
 
@@ -207,8 +207,17 @@ class SplashFragment :
     fun isInternetAvailable(context: Context): Boolean {
         val connectivityManager =
             context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val activeNetworkInfo: NetworkInfo? = connectivityManager.activeNetworkInfo
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val network = connectivityManager.activeNetwork
+            val capabilities = connectivityManager.getNetworkCapabilities(network)
+            capabilities != null && (capabilities.hasTransport(android.net.NetworkCapabilities.TRANSPORT_WIFI) ||
+                    capabilities.hasTransport(android.net.NetworkCapabilities.TRANSPORT_CELLULAR) ||
+                    capabilities.hasTransport(android.net.NetworkCapabilities.TRANSPORT_ETHERNET))
+        } else {
+            @Suppress("DEPRECATION")
+            val activeNetworkInfo: NetworkInfo? = connectivityManager.activeNetworkInfo
+            activeNetworkInfo != null && activeNetworkInfo.isConnected
+        }
     }
 
     override fun onResume() {

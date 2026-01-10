@@ -44,10 +44,16 @@ class HomeAdapter(private val dailyWeatherResponse: ArrayList<DailyWeatherRespon
     }
 
     fun updateDailyData(dailyData: List<DailyWeatherResponse.WeatherList>) {
+        val oldSize = dailyWeatherResponse.size
         dailyWeatherResponse.clear()
         dailyWeatherResponse.addAll(dailyData)
         Log.d("TAG", "UpdateDailyData: ${dailyData}")
-        notifyDataSetChanged()
+        // Smooth animasyon için notifyItemRangeChanged kullan
+        if (oldSize == dailyData.size) {
+            notifyItemRangeChanged(0, dailyData.size)
+        } else {
+            notifyDataSetChanged()
+        }
     }
 }
 

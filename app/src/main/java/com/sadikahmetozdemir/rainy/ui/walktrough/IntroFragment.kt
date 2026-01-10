@@ -1,5 +1,6 @@
 package com.sadikahmetozdemir.rainy.ui.walktrough
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
@@ -80,7 +81,8 @@ class IntroFragment : BaseFragment<FragmentIntroBinding, IntroViewModel>(R.layou
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-//        super.onViewCreated(view, savedInstanceState)
+        super.onViewCreated(view, savedInstanceState)
+        location = LocationServices.getFusedLocationProviderClient(this.requireActivity())
 //        binding.vpIntro.adapter = IntroAdapter(prepareIntroList())
 //        binding.vpIntro.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
 //            override fun onPageSelected(position: Int) {
@@ -158,6 +160,7 @@ class IntroFragment : BaseFragment<FragmentIntroBinding, IntroViewModel>(R.layou
         )
     }
 
+    @SuppressLint("MissingPermission")
     private fun checkLocationPermission() {
         val fineLocationPermission = PackageManager.PERMISSION_GRANTED ==
                 ActivityCompat.checkSelfPermission(
@@ -213,18 +216,18 @@ class IntroFragment : BaseFragment<FragmentIntroBinding, IntroViewModel>(R.layou
     }
 
     fun showEnableLocationDialog(context: Context) {
-        isLocationDialogShowing
-        val explain = R.string.need_permission
+        if (isLocationDialogShowing) return
+        isLocationDialogShowing = true
+        val explain = getString(R.string.need_permission)
         val alertDialog =
             AlertDialog.Builder(context).setTitle("Konum Hizmetleri").setCancelable(false)
                 .setMessage(explain).setPositiveButton("Ayarlar") { dialog, _ ->
                     val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
                     context.startActivity(intent)
-                    !isLocationDialogShowing
-                    if (!isLocationDialogShowing) {
-                        dialog.dismiss()
-                    }
+                    isLocationDialogShowing = false
+                    dialog.dismiss()
                 }.setNegativeButton("İptal") { dialog, _ ->
+                    isLocationDialogShowing = false
                     dataHelperManager = DataHelperManager(requireContext())
                     lifecycleScope.launch(Dispatchers.Default) {
                         lat = dataHelperManager.getLatitude()
@@ -232,10 +235,8 @@ class IntroFragment : BaseFragment<FragmentIntroBinding, IntroViewModel>(R.layou
                         viewModel.onClickNext(lat = lat, lon = lon)
                     }
                     dialog.dismiss()
-
                 }
                 .setCancelable(false)
-
                 .create()
         alertDialog.show()
 
@@ -249,12 +250,19 @@ class IntroFragment : BaseFragment<FragmentIntroBinding, IntroViewModel>(R.layou
 
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                isLocationEnabled(requireContext())
+                if (isLocationEnabled(requireContext())) {
+                    checkLocationPermission()
+                } else {
+                    showEnableLocationDialog(requireContext())
+                }
             } else {
-
+                Toast.makeText(
+                    requireContext(),
+                    "Konum izni verilmedi. Hava durumu bilgilerini görmek için konum izni gereklidir.",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
             super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
         }
     }
 

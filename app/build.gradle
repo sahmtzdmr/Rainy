@@ -24,8 +24,8 @@ android {
         applicationId "com.sadikahmetozdemir.rainy"
         minSdk 21
         targetSdk 35
-        versionCode 19
-        versionName "1.0.3"
+        versionCode 21
+        versionName "1.0.5"
 
 
 

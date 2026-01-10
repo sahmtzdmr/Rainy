@@ -19,6 +19,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.sadikahmetozdemir.rainy.R
@@ -35,7 +37,8 @@ class HomeFragment :
     BaseFragment<FragmentHomeBinding, HomeViewModel>(R.layout.fragment_home) {
     private val args: HomeFragmentArgs by navArgs()
     private var homeAdapter = HomeAdapter(arrayListOf())
-    val handler = Handler(Looper.getMainLooper())
+    private val handler = Handler(Looper.getMainLooper())
+    private var progressRunnable: Runnable? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -52,17 +55,23 @@ class HomeFragment :
         binding.apply {
             rvChildItem.adapter = homeAdapter
             rvChildItem.setHasFixedSize(true)
-
+            // Smooth scroll ve animasyon için
+            val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+            rvChildItem.layoutManager = layoutManager
+            val itemAnimator = DefaultItemAnimator()
+            itemAnimator.addDuration = 300
+            itemAnimator.removeDuration = 300
+            rvChildItem.itemAnimator = itemAnimator
         }
         binding.etSearch.setOnKeyListener { _, keyCode, event ->
-            if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN)
+            if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN) {
                 viewModel.getForecastData()
-            binding.etSearch.text?.clear()
-            hideKeyboard(binding.etSearch)
-            return@setOnKeyListener true
-            throw RuntimeException("Test Crash")
+                binding.etSearch.text?.clear()
+                hideKeyboard(binding.etSearch)
+                return@setOnKeyListener true
+            }
+            return@setOnKeyListener false
         }
-        false
 
         initObserve()
     }
@@ -153,22 +162,32 @@ class HomeFragment :
     // İlerleme çubuğunu simüle eden bir işlev
     fun simulateProgress() {
         var value = 0
-        val interval = 50 // Her 100 milisaniyede bir güncelle
+        val interval = 50 // Her 50 milisaniyede bir güncelle
         val maxProgress = 100
 
-        handler.postDelayed(object : Runnable {
+        progressRunnable = object : Runnable {
             override fun run() {
                 if (value < maxProgress) {
                     value++
                     updateProgressBar(value)
                     handler.postDelayed(this, interval.toLong())
+                } else {
+                    progressRunnable = null
                 }
             }
-        }, interval.toLong())
+        }
+        handler.postDelayed(progressRunnable!!, interval.toLong())
     }
 
     override fun onPause() {
         super.onPause()
+        progressRunnable?.let { handler.removeCallbacks(it) }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        progressRunnable?.let { handler.removeCallbacks(it) }
+        progressRunnable = null
     }
 
     override fun onResume() {
