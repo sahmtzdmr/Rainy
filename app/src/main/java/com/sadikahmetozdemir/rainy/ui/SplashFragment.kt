@@ -62,24 +62,23 @@ class SplashFragment :
         lifecycleScope.launch(Dispatchers.Main) {
             if (isInternetAvailable(requireContext())) {
                 delay(2500)
-                viewModel.toIntro()
-//                if (dataHelperManager.isFirstAttach()) {
-//                    viewModel.toIntro()
-//                    dataHelperManager.firstAttach()
-//                } else {
-//                    checkLocationPermission()
-//                    if (context?.let { isLocationEnabled(it) } == true) {
-//                        lifecycleScope.launch(Dispatchers.Main) {
-//                            lat = dataHelperManager.getLatitude()
-//                            lon = dataHelperManager.getLongitude()
-//                            viewModel.toHomePage(
-//                                lat, lon
-//                            )
-//                        }
-//                    } else {
-//                        showEnableLocationDialog(requireContext())
-//                    }
-//                }
+                // İlk açılış kontrolü
+                if (dataHelperManager.isFirstAttach()) {
+                    // İlk kez açılıyor, intro ekranına git
+                    viewModel.toIntro()
+                } else {
+                    // Daha önce açılmış, direkt home'a git
+                    if (context?.let { isLocationEnabled(it) } == true) {
+                        checkLocationPermission()
+                        lifecycleScope.launch(Dispatchers.Main) {
+                            lat = dataHelperManager.getLatitude()
+                            lon = dataHelperManager.getLongitude()
+                            viewModel.toHomePage(lat, lon)
+                        }
+                    } else {
+                        showEnableLocationDialog(requireContext())
+                    }
+                }
             } else {
                 Toast.makeText(
                     requireContext(),
@@ -87,7 +86,6 @@ class SplashFragment :
                     Toast.LENGTH_SHORT
                 ).show()
             }
-
         }
 
     }
@@ -232,20 +230,11 @@ class SplashFragment :
 
     override fun onResume() {
         super.onResume()
+        // onResume'da sadece location kontrolü yap, navigation işlemlerini onViewCreated'da yap
         lifecycleScope.launch {
-            if (dataHelperManager.isFirstAttach()) {
-                viewModel.toIntro()
-                dataHelperManager.firstAttach()
-            } else if (context?.let { isLocationEnabled(it) } == true) {
+            if (!dataHelperManager.isFirstAttach() && context?.let { isLocationEnabled(it) } == true) {
                 checkLocationPermission()
-                lifecycleScope.launch(Dispatchers.Main) {
-                    delay(2500)
-                    lat = dataHelperManager.getLatitude()
-                    lon = dataHelperManager.getLongitude()
-                    viewModel.toHomePage(lat, lon)
-                }
             }
         }
-
     }
 }

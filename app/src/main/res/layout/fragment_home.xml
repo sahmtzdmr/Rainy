@@ -45,6 +45,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_8"
+                android:layout_marginEnd="8dp"
                 android:digits="abcçdefgğhıijklmnoöpqrsştuüvwxyzABCÇDEFGĞHIİJKLMNOÖPQRSŞTUÜVWXYZ"
                 android:hint="@string/city_name"
                 android:imeOptions="actionDone"
@@ -61,34 +62,25 @@
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:layout_marginTop="@dimen/margin_8"
+                android:layout_marginEnd="0dp"
                 android:onClick="@{()->vM.getForecastData()}"
                 android:src="@drawable/ic_search"
+                android:contentDescription="@string/city_name"
                 app:layout_constraintBottom_toBottomOf="@id/et_search"
-                app:layout_constraintEnd_toStartOf="@id/iv_share"
-                app:layout_constraintStart_toEndOf="@id/et_search"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/iv_share"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:src="@drawable/ic_share"
-                android:layout_marginTop="@dimen/margin_8"
                 app:layout_constraintEnd_toEndOf="@id/guidelineRight"
-                app:layout_constraintStart_toEndOf="@id/iv_search"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="@id/et_search" />
 
             <TextView
                 android:id="@+id/tv_cityName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:rotation="90"
                 android:textAllCaps="true"
-                android:textColor="@color/white"
-                android:textSize="16sp"
-                app:layout_constraintBottom_toTopOf="@id/llDetails"
-                app:layout_constraintEnd_toStartOf="@id/iv_weather"
-                app:layout_constraintStart_toStartOf="@id/iv_weather"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:paddingStart="16dp"
+                app:layout_constraintBottom_toTopOf="@id/tv_degree"
+                app:flow_horizontalBias="0.2"
+                app:layout_constraintStart_toStartOf="@id/guidelineLeft"
                 app:layout_constraintTop_toBottomOf="@id/et_search"
                 tools:text="Deneme" />
 
@@ -97,15 +89,17 @@
                 android:id="@+id/tv_weather"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:rotation="270"
+                android:layout_marginBottom="16dp"
                 android:text="@{vM.weather.weatherItemModel.get(0).description}"
                 android:textAllCaps="true"
-                android:textColor="@color/white"
-                android:textSize="18sp"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:gravity="center"
                 app:layout_constraintBottom_toTopOf="@id/llDetails"
                 app:layout_constraintEnd_toEndOf="@id/guidelineRight"
-                app:layout_constraintStart_toEndOf="@id/iv_weather"
-                app:layout_constraintTop_toTopOf="@id/iv_weather" />
+                app:layout_constraintStart_toStartOf="@id/guidelineLeft"
+                app:layout_constraintTop_toBottomOf="@id/iv_weather" />
 
 
             <TextView

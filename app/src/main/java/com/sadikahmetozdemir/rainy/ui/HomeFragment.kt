@@ -116,7 +116,6 @@ class HomeFragment :
                 binding.apply {
 //                    progressBar.visibility = View.VISIBLE
                     iconImageView.visibility = View.VISIBLE
-                    ivShare.visibility = View.GONE
                     simulateProgress()
                     etSearch.visibility = View.GONE
                     ivSearch.visibility = View.GONE
@@ -133,7 +132,6 @@ class HomeFragment :
                 binding.apply {
                     progressBar.visibility = View.GONE
                     iconImageView.visibility = View.GONE
-                    ivShare.visibility = View.VISIBLE
                     etSearch.visibility = View.VISIBLE
                     ivSearch.visibility = View.VISIBLE
                     tvWeather.visibility = View.VISIBLE
