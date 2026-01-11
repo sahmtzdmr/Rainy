@@ -16,11 +16,14 @@
         backgroundResource="@{vM.weather.weatherItemModel.get(0).icon}"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:fitsSystemWindows="false"
         tools:context=".ui.HomeFragment">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/main_content"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:fitsSystemWindows="false">
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guidelineLeft"

@@ -18,6 +18,8 @@ import android.widget.ImageView
 import androidx.appcompat.app.AlertDialog
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -44,6 +46,14 @@ class HomeFragment :
         super.onViewCreated(view, savedInstanceState)
         var lat = args.lat
         var lon = args.lon
+        
+        // Window insets için padding ekle
+        ViewCompat.setOnApplyWindowInsetsListener(binding.mainContent) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(0, systemBars.top, 0, systemBars.bottom)
+            insets
+        }
+        
         homeAdapter.itemClicked = {
             viewModel.getForecastFromRV(it)
         }

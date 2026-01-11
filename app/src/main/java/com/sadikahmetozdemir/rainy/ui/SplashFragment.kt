@@ -18,6 +18,8 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -47,6 +49,14 @@ class SplashFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        
+        // Window insets için padding ekle
+        ViewCompat.setOnApplyWindowInsetsListener(binding.splashContent) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(0, systemBars.top, 0, systemBars.bottom)
+            insets
+        }
+        
         location = LocationServices.getFusedLocationProviderClient(this.requireActivity())
         dataHelperManager = DataHelperManager(requireContext())
         lifecycleScope.launch(Dispatchers.Main) {

@@ -19,6 +19,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.ComposeView
 import androidx.core.app.ActivityCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
@@ -53,6 +55,15 @@ class IntroFragment : BaseFragment<FragmentIntroBinding, IntroViewModel>(R.layou
         savedInstanceState: Bundle?
     ): View? {
         val view = super.onCreateView(inflater, container, savedInstanceState)
+
+        // Window insets için padding ekle
+        view?.let {
+            ViewCompat.setOnApplyWindowInsetsListener(it) { v, insets ->
+                val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+                v.setPadding(0, systemBars.top, 0, systemBars.bottom)
+                insets
+            }
+        }
 
         val composeView = view?.findViewById<ComposeView>(R.id.compose_view)
         composeView?.setContent {
