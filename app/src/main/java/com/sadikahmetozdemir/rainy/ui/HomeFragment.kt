@@ -65,7 +65,13 @@ class HomeFragment :
             viewModel.getForecastFromRV(it)
         }
         viewModel.dailyWeather.observe(viewLifecycleOwner) {
-            homeAdapter.updateDailyData((it.get(0).list))
+            if (it.isNotEmpty() && it[0].list.isNotEmpty()) {
+                homeAdapter.updateDailyData((it.get(0).list))
+                // Veri geldiğinde RecyclerView'ı görünür yap
+                if (viewModel.weather.value != null && viewModel.loading.value == false) {
+                    binding.rvChildItem.visibility = View.VISIBLE
+                }
+            }
         }
 
 
@@ -156,7 +162,11 @@ class HomeFragment :
                     ivSearch.visibility = View.VISIBLE
                     
                     // Sadece veri varsa göster
-                    if (viewModel.weather.value != null) {
+                    val hasWeatherData = viewModel.weather.value != null
+                    val hasDailyData = viewModel.dailyWeather.value?.isNotEmpty() == true && 
+                                      viewModel.dailyWeather.value?.get(0)?.list?.isNotEmpty() == true
+                    
+                    if (hasWeatherData) {
                         tvWeather.visibility = View.VISIBLE
                         tvCurrentDate.visibility = View.VISIBLE
                         tvCurrentTime.visibility = View.VISIBLE
@@ -167,7 +177,10 @@ class HomeFragment :
                         tvRainRate.visibility = View.VISIBLE
                         tvCityName.visibility = View.VISIBLE
                         tvDegree.visibility = View.VISIBLE
-                        rvChildItem.visibility = View.VISIBLE
+                        // Günlük hava durumu verisi varsa RecyclerView'ı göster
+                        if (hasDailyData) {
+                            rvChildItem.visibility = View.VISIBLE
+                        }
                         tvErrorMessage.visibility = View.GONE
                     } else {
                         // Hata durumu - 2 saniye boyunca hata mesajı göster

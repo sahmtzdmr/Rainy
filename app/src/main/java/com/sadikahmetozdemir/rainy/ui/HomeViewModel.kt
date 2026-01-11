@@ -49,10 +49,16 @@ class HomeViewModel @Inject constructor(
                 Constants.METRIC
             )
         },
-            success =
-            { _weather.value = it },
-            error =
-            {
+            success = { weatherResponse ->
+                _weather.value = weatherResponse
+                // Şehir bulunduğunda günlük hava durumunu da çek
+                weatherResponse.coordModel?.lat?.toString()?.let { lat ->
+                    weatherResponse.coordModel?.lon?.toString()?.let { lon ->
+                        getDailyWeather(lat, lon, cnt, Constants.METRIC)
+                    }
+                }
+            },
+            error = {
                 it
             }
         )
@@ -71,9 +77,15 @@ class HomeViewModel @Inject constructor(
                     Constants.METRIC
                 )
             },
-            success = {
-                _weather.value = it
+            success = { weatherResponse ->
+                _weather.value = weatherResponse
                 _loading.value = false
+                // Şehir bulunduğunda günlük hava durumunu da çek
+                weatherResponse.coordModel?.lat?.toString()?.let { lat ->
+                    weatherResponse.coordModel?.lon?.toString()?.let { lon ->
+                        getDailyWeather(lat, lon, cnt, Constants.METRIC)
+                    }
+                }
             },
             error = { exception ->
                 _loading.value = false
@@ -100,13 +112,14 @@ class HomeViewModel @Inject constructor(
 
     fun getDailyWeather(lat: String, lon: String, cnt: String, units: String) {
         sendRequest(request = {
-            _loading.value = true
+            // Loading state'ini değiştirme, çünkü ana istek zaten tamamlandı
             defaultRepository.getDailyWeather(lat, lon, cnt, units)
         },
             success = { dailyResponse ->
-                _loading.value = false
                 _dailyWeather.value = listOf(dailyResponse)
-            }, error = { it }
+            }, error = { 
+                // Hata durumunda sessizce devam et, ana hava durumu zaten gösteriliyor
+            }
         )
     }
 
