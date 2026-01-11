@@ -20,12 +20,16 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.sadikahmetozdemir.rainy.R
+import com.sadikahmetozdemir.rainy.base.BaseViewEvent
+import kotlinx.coroutines.launch
 import com.sadikahmetozdemir.rainy.base.BaseFragment
 import com.sadikahmetozdemir.rainy.databinding.FragmentHomeBinding
 import com.sadikahmetozdemir.rainy.utils.adapter.changeWeatherIcon
@@ -53,6 +57,9 @@ class HomeFragment :
             v.setPadding(0, systemBars.top, 0, systemBars.bottom)
             insets
         }
+        
+        // BaseFragment'ın onViewCreated'ını çağır (baseEvent handling için)
+        // Ama ShowMessage için özel snackbar gösterilecek
         
         homeAdapter.itemClicked = {
             viewModel.getForecastFromRV(it)
@@ -95,7 +102,7 @@ class HomeFragment :
 
     fun initObserve() {
         viewModel.weather.observe(viewLifecycleOwner) { item ->
-            item.let {
+            item?.let {
                 binding.tvCityName.text = it.name
                 binding.tvWeather.text = it.weatherItemModel?.get(0)?.description
                 val tempInt=it.mainModel?.temp?.toInt()
@@ -116,6 +123,8 @@ class HomeFragment :
                 binding.apply {
 //                    progressBar.visibility = View.VISIBLE
                     iconImageView.visibility = View.VISIBLE
+                    tvLoadingMessage.visibility = View.VISIBLE
+                    tvErrorMessage.visibility = View.GONE
                     simulateProgress()
                     etSearch.visibility = View.GONE
                     ivSearch.visibility = View.GONE
@@ -127,21 +136,50 @@ class HomeFragment :
                     tvWindSpeed.visibility = View.GONE
                     ivWeather.visibility = View.GONE
                     tvRainRate.visibility = View.GONE
+                    tvCityName.visibility = View.GONE
+                    tvDegree.visibility = View.GONE
+                    rvChildItem.visibility = View.GONE
+                    
+                    // 2 saniye sonra loading mesajını gizle
+                    handler.postDelayed({
+                        if (binding.tvLoadingMessage.visibility == View.VISIBLE) {
+                            binding.tvLoadingMessage.visibility = View.GONE
+                        }
+                    }, 2000)
                 }
             } else {
                 binding.apply {
                     progressBar.visibility = View.GONE
                     iconImageView.visibility = View.GONE
+                    tvLoadingMessage.visibility = View.GONE
                     etSearch.visibility = View.VISIBLE
                     ivSearch.visibility = View.VISIBLE
-                    tvWeather.visibility = View.VISIBLE
-                    tvCurrentDate.visibility = View.VISIBLE
-                    tvCurrentTime.visibility = View.VISIBLE
-                    ivRain.visibility = View.VISIBLE
-                    ivWind.visibility = View.VISIBLE
-                    tvWindSpeed.visibility = View.VISIBLE
-                    ivWeather.visibility = View.VISIBLE
-                    tvRainRate.visibility = View.VISIBLE
+                    
+                    // Sadece veri varsa göster
+                    if (viewModel.weather.value != null) {
+                        tvWeather.visibility = View.VISIBLE
+                        tvCurrentDate.visibility = View.VISIBLE
+                        tvCurrentTime.visibility = View.VISIBLE
+                        ivRain.visibility = View.VISIBLE
+                        ivWind.visibility = View.VISIBLE
+                        tvWindSpeed.visibility = View.VISIBLE
+                        ivWeather.visibility = View.VISIBLE
+                        tvRainRate.visibility = View.VISIBLE
+                        tvCityName.visibility = View.VISIBLE
+                        tvDegree.visibility = View.VISIBLE
+                        rvChildItem.visibility = View.VISIBLE
+                        tvErrorMessage.visibility = View.GONE
+                    } else {
+                        // Hata durumu - 2 saniye boyunca hata mesajı göster
+                        iconImageView.visibility = View.VISIBLE
+                        tvErrorMessage.visibility = View.VISIBLE
+                        
+                        // 2 saniye sonra hata mesajını gizle
+                        handler.postDelayed({
+                            binding.iconImageView.visibility = View.GONE
+                            binding.tvErrorMessage.visibility = View.GONE
+                        }, 2000)
+                    }
                 }
             }
         }
@@ -218,6 +256,7 @@ class HomeFragment :
         return formattedTime
 
     }
+
 
 }
 

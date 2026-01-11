@@ -60,7 +60,7 @@ class HomeViewModel @Inject constructor(
 
     fun getForecastData() = viewModelScope.launch {
         if (etCity.value?.trim()?.lowercase().isNullOrBlank()) {
-            BaseViewEvent.ShowMessage(SharedPreferenceStorage.CHECK_CITY_NAME)
+            showMessage(SharedPreferenceStorage.CHECK_CITY_NAME)
             return@launch
         }
         sendRequest(
@@ -75,8 +75,10 @@ class HomeViewModel @Inject constructor(
                 _weather.value = it
                 _loading.value = false
             },
-            error = {
-                it
+            error = { exception ->
+                _loading.value = false
+                // Hata durumunda weather'ı null yap ki UI'da hata mesajı gösterilebilsin
+                _weather.value = null
             }
         )
 
