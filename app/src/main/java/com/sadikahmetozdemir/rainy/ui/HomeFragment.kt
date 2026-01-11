@@ -36,6 +36,8 @@ import com.sadikahmetozdemir.rainy.utils.adapter.changeWeatherIcon
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.Date
+import java.util.Locale
+import kotlin.math.roundToInt
 
 
 @AndroidEntryPoint
@@ -43,8 +45,10 @@ class HomeFragment :
     BaseFragment<FragmentHomeBinding, HomeViewModel>(R.layout.fragment_home) {
     private val args: HomeFragmentArgs by navArgs()
     private var homeAdapter = HomeAdapter(arrayListOf())
+    private var hourlyAdapter = HourlyWeatherAdapter(arrayListOf())
     private val handler = Handler(Looper.getMainLooper())
     private var progressRunnable: Runnable? = null
+    private var isSearchVisible = false
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -74,17 +78,104 @@ class HomeFragment :
             }
         }
 
+        viewModel.hourlyWeather.observe(viewLifecycleOwner) { hourlyResponse ->
+            hourlyResponse?.list?.let { hourlyList ->
+                hourlyAdapter.updateHourlyData(hourlyList)
+                // Veri geldiğinde RecyclerView'ı görünür yap
+                if (viewModel.weather.value != null && viewModel.loading.value == false) {
+                    binding.rvHourlyWeather.visibility = View.VISIBLE
+                }
+            }
+        }
+
+        // Seçilen saatlik hava durumu observer
+        viewModel.selectedHourlyWeather.observe(viewLifecycleOwner) { hourlyItem ->
+            hourlyItem?.let { item ->
+                // Ana ekrandaki hava durumu bilgilerini güncelle
+                binding.apply {
+                    // Sıcaklık
+                    val tempInt = item.main?.temp?.roundToInt()
+                    tvDegree.text = "${tempInt}°C"
+                    
+                    // Hava durumu açıklaması
+                    item.weather.getOrNull(0)?.description?.let { description ->
+                        tvWeather.text = description.replaceFirstChar { 
+                            if (it.isLowerCase()) it.titlecase() else it.toString() 
+                        }
+                    }
+                    
+                    // Hava durumu ikonu
+                    item.weather.getOrNull(0)?.icon?.let { icon ->
+                        ivWeather.changeWeatherIcon(icon)
+                    }
+                    
+                    // Rüzgar hızı
+                    item.wind?.speed?.let { speed ->
+                        tvWindSpeed.text = "${speed} km/h"
+                    }
+                    
+                    // Nem
+                    item.main?.humidity?.let { humidity ->
+                        tvRainRate.text = "${humidity} %"
+                    }
+                    
+                    // Tarih ve saat bilgisi
+                    item.dt?.let { timestamp ->
+                        val date = Date(timestamp * 1000)
+                        // Tarih formatı
+                        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+                        tvCurrentDate.text = dateFormat.format(date)
+                        // Saat formatı
+                        val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+                        tvCurrentTime.text = timeFormat.format(date)
+                    }
+                }
+            }
+        }
+
+        // Saatlik adapter click listener
+        hourlyAdapter.itemClicked = { hourlyItem ->
+            viewModel.setSelectedHourlyWeather(hourlyItem)
+        }
+
+        // Arama ikonu click listener
+        binding.ivSearch.setOnClickListener {
+            if (isSearchVisible) {
+                // Arama kutusu görünürse arama yap
+                viewModel.getForecastData()
+                binding.etSearch.text?.clear()
+                hideKeyboard(binding.etSearch)
+            } else {
+                // Arama kutusu gizliyse göster
+                isSearchVisible = true
+                binding.etSearch.visibility = View.VISIBLE
+                binding.etSearch.requestFocus()
+                // Klavye göster
+                val imm = requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.showSoftInput(binding.etSearch, InputMethodManager.SHOW_IMPLICIT)
+            }
+        }
 
         binding.apply {
+            // Günlük hava durumu RecyclerView
             rvChildItem.adapter = homeAdapter
             rvChildItem.setHasFixedSize(true)
-            // Smooth scroll ve animasyon için
-            val layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-            rvChildItem.layoutManager = layoutManager
-            val itemAnimator = DefaultItemAnimator()
-            itemAnimator.addDuration = 300
-            itemAnimator.removeDuration = 300
-            rvChildItem.itemAnimator = itemAnimator
+            val dailyLayoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+            rvChildItem.layoutManager = dailyLayoutManager
+            val dailyItemAnimator = DefaultItemAnimator()
+            dailyItemAnimator.addDuration = 300
+            dailyItemAnimator.removeDuration = 300
+            rvChildItem.itemAnimator = dailyItemAnimator
+
+            // Saatlik hava durumu RecyclerView (dikey)
+            rvHourlyWeather.adapter = hourlyAdapter
+            rvHourlyWeather.setHasFixedSize(true)
+            val hourlyLayoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+            rvHourlyWeather.layoutManager = hourlyLayoutManager
+            val hourlyItemAnimator = DefaultItemAnimator()
+            hourlyItemAnimator.addDuration = 300
+            hourlyItemAnimator.removeDuration = 300
+            rvHourlyWeather.itemAnimator = hourlyItemAnimator
         }
         binding.etSearch.setOnKeyListener { _, keyCode, event ->
             if (keyCode == KeyEvent.KEYCODE_ENTER && event.action == KeyEvent.ACTION_DOWN) {
@@ -180,6 +271,10 @@ class HomeFragment :
                         // Günlük hava durumu verisi varsa RecyclerView'ı göster
                         if (hasDailyData) {
                             rvChildItem.visibility = View.VISIBLE
+                        }
+                        // Saatlik hava durumu verisi varsa göster
+                        if (viewModel.hourlyWeather.value != null) {
+                            rvHourlyWeather.visibility = View.VISIBLE
                         }
                         tvErrorMessage.visibility = View.GONE
                     } else {

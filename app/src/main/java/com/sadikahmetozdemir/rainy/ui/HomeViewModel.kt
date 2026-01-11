@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.sadikahmetozdemir.rainy.base.BaseViewEvent
 import com.sadikahmetozdemir.rainy.base.BaseViewModel
 import com.sadikahmetozdemir.rainy.core.shared.remote.WeatherResponseModel
+import com.sadikahmetozdemir.rainy.core.shared.remote.hourly.HourlyWeatherResponse
 import com.sadikahmetozdemir.rainy.core.shared.repository.DefaultRepository
 import com.sadikahmetozdemir.rainy.utils.Constants
 import com.sadikahmetozdemir.rainy.utils.SharedPreferenceStorage
@@ -29,17 +30,23 @@ class HomeViewModel @Inject constructor(
     val weather: LiveData<WeatherResponseModel> get() = _weather
     private val _dailyWeather: MutableLiveData<List<DailyWeatherResponse>> = MutableLiveData()
     val dailyWeather: LiveData<List<DailyWeatherResponse>> get() = _dailyWeather
+    private val _hourlyWeather: MutableLiveData<HourlyWeatherResponse> = MutableLiveData()
+    val hourlyWeather: LiveData<HourlyWeatherResponse> get() = _hourlyWeather
+    private val _selectedHourlyWeather: MutableLiveData<com.sadikahmetozdemir.rainy.core.shared.remote.hourly.HourlyWeatherItem> = MutableLiveData()
+    val selectedHourlyWeather: LiveData<com.sadikahmetozdemir.rainy.core.shared.remote.hourly.HourlyWeatherItem> get() = _selectedHourlyWeather
     private val _loading: MutableLiveData<Boolean> = MutableLiveData()
     val loading: LiveData<Boolean> get() = _loading
+    
+    fun setSelectedHourlyWeather(item: com.sadikahmetozdemir.rainy.core.shared.remote.hourly.HourlyWeatherItem) {
+        _selectedHourlyWeather.value = item
+    }
 
 
 
     init {
         getCurrentData(lat, lon, Constants.METRIC)
-//        getCurrentData("44.3473", "44.3473")
         getDailyWeather(lat, lon, cnt, Constants.METRIC)
-//        getDailyWeather("44.3473", "44.3473",cnt)
-
+        getHourlyWeather(lat, lon, Constants.METRIC)
     }
 
     fun getForecastFromRV(location: String) {
@@ -51,10 +58,11 @@ class HomeViewModel @Inject constructor(
         },
             success = { weatherResponse ->
                 _weather.value = weatherResponse
-                // Şehir bulunduğunda günlük hava durumunu da çek
+                // Şehir bulunduğunda günlük ve saatlik hava durumunu da çek
                 weatherResponse.coordModel?.lat?.toString()?.let { lat ->
                     weatherResponse.coordModel?.lon?.toString()?.let { lon ->
                         getDailyWeather(lat, lon, cnt, Constants.METRIC)
+                        getHourlyWeather(lat, lon, Constants.METRIC)
                     }
                 }
             },
@@ -80,10 +88,11 @@ class HomeViewModel @Inject constructor(
             success = { weatherResponse ->
                 _weather.value = weatherResponse
                 _loading.value = false
-                // Şehir bulunduğunda günlük hava durumunu da çek
+                // Şehir bulunduğunda günlük ve saatlik hava durumunu da çek
                 weatherResponse.coordModel?.lat?.toString()?.let { lat ->
                     weatherResponse.coordModel?.lon?.toString()?.let { lon ->
                         getDailyWeather(lat, lon, cnt, Constants.METRIC)
+                        getHourlyWeather(lat, lon, Constants.METRIC)
                     }
                 }
             },
@@ -117,6 +126,19 @@ class HomeViewModel @Inject constructor(
         },
             success = { dailyResponse ->
                 _dailyWeather.value = listOf(dailyResponse)
+            }, error = { 
+                // Hata durumunda sessizce devam et, ana hava durumu zaten gösteriliyor
+            }
+        )
+    }
+
+    fun getHourlyWeather(lat: String, lon: String, units: String, cnt: Int = 24) {
+        sendRequest(request = {
+            // Loading state'ini değiştirme, çünkü ana istek zaten tamamlandı
+            defaultRepository.getHourlyWeather(lat, lon, units, cnt)
+        },
+            success = { hourlyResponse ->
+                _hourlyWeather.value = hourlyResponse
             }, error = { 
                 // Hata durumunda sessizce devam et, ana hava durumu zaten gösteriliyor
             }

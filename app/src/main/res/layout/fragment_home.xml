@@ -37,6 +37,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
+                app:layout_constraintGuide_end="80dp" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guidelineHourlyRight"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
                 app:layout_constraintGuide_end="16dp" />
 
             <androidx.appcompat.widget.AppCompatEditText
@@ -52,6 +59,7 @@
                 android:importantForAutofill="no"
                 android:inputType="text"
                 android:text="@={vM.etCity}"
+                android:visibility="gone"
                 app:layout_constraintBottom_toTopOf="@id/iv_weather"
                 app:layout_constraintEnd_toStartOf="@id/iv_search"
                 app:layout_constraintStart_toStartOf="@id/guidelineLeft"
@@ -62,12 +70,9 @@
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:layout_marginTop="@dimen/margin_8"
-                android:layout_marginEnd="0dp"
-                android:onClick="@{()->vM.getForecastData()}"
                 android:src="@drawable/ic_search"
                 android:contentDescription="@string/city_name"
-                app:layout_constraintBottom_toBottomOf="@id/et_search"
-                app:layout_constraintEnd_toEndOf="@id/guidelineRight"
+                app:layout_constraintEnd_toEndOf="@id/guidelineHourlyRight"
                 app:layout_constraintTop_toTopOf="@id/et_search" />
 
             <TextView
@@ -97,7 +102,7 @@
                 android:textStyle="bold"
                 android:gravity="center"
                 app:layout_constraintBottom_toTopOf="@id/llDetails"
-                app:layout_constraintEnd_toEndOf="@id/guidelineRight"
+                app:layout_constraintEnd_toStartOf="@id/rv_hourly_weather"
                 app:layout_constraintStart_toStartOf="@id/guidelineLeft"
                 app:layout_constraintTop_toBottomOf="@id/iv_weather" />
 
@@ -155,7 +160,7 @@
                 android:paddingStart="30dp"
                 android:paddingTop="30dp"
                 app:layout_constraintBottom_toTopOf="@id/llDetails"
-                app:layout_constraintEnd_toEndOf="@id/guidelineRight"
+                app:layout_constraintEnd_toStartOf="@id/rv_hourly_weather"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="@id/guidelineLeft"
                 app:layout_constraintTop_toBottomOf="@id/et_search"
@@ -229,7 +234,7 @@
                 android:orientation="horizontal"
                 app:flow_horizontalBias="0.5"
                 app:layout_constraintBottom_toTopOf="@id/rv_child_item"
-                app:layout_constraintEnd_toEndOf="@id/guidelineRight"
+                app:layout_constraintEnd_toStartOf="@id/rv_hourly_weather"
                 app:layout_constraintStart_toStartOf="@id/guidelineLeft"
                 app:layout_constraintTop_toBottomOf="@id/iv_weather">
 
@@ -274,6 +279,18 @@
 
             </LinearLayout>
 
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_hourly_weather"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_marginStart="8dp"
+                android:orientation="vertical"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintBottom_toTopOf="@id/rv_child_item"
+                app:layout_constraintEnd_toEndOf="@id/guidelineHourlyRight"
+                app:layout_constraintStart_toEndOf="@id/guidelineRight"
+                app:layout_constraintTop_toBottomOf="@id/iv_search"
+                tools:listitem="@layout/item_hourly_weather" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_child_item"
