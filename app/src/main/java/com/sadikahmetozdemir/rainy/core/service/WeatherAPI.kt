@@ -1,6 +1,7 @@
 package com.sadikahmetozdemir.rainy.core.service
 
 import com.sadikahmetozdemir.rainy.core.shared.remote.WeatherResponseModel
+import com.sadikahmetozdemir.rainy.core.shared.remote.hourly.HourlyWeatherResponse
 import com.sadikahmetozdemir.rainy.utils.Constants
 import retrofit2.Call
 import retrofit2.Response
@@ -31,4 +32,13 @@ interface WeatherAPI {
         @Query("units") units: String,
         @Query("lang") language: String = Constants.LANGUAGE,
     ): DailyWeatherResponse
+
+    @GET("forecast")
+    suspend fun getHourlyWeather(
+        @Query("lat") lat: String,
+        @Query("lon") lon: String,
+        @Query("units") units: String,
+        @Query("cnt") cnt: Int = 24,
+        @Query("lang") language: String = Constants.LANGUAGE
+    ): HourlyWeatherResponse
 }

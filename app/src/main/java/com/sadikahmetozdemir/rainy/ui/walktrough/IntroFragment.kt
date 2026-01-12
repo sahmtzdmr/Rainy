@@ -1,5 +1,6 @@
-package com.sadikahmetozdemir.rainy.ui
+package com.sadikahmetozdemir.rainy.ui.walktrough
 
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
@@ -8,32 +9,39 @@ import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
 import android.provider.Settings
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.ComposeView
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.navArgs
+import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.Task
 import com.sadikahmetozdemir.rainy.R
 import com.sadikahmetozdemir.rainy.base.BaseFragment
+import com.sadikahmetozdemir.rainy.base.BaseViewEvent
 import com.sadikahmetozdemir.rainy.core.shared.remote.IntroModel
 import com.sadikahmetozdemir.rainy.databinding.FragmentIntroBinding
 import com.sadikahmetozdemir.rainy.utils.DataHelperManager
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class IntroFragment : BaseFragment<FragmentIntroBinding, IntroViewModel>(R.layout.fragment_intro) {
     lateinit var location: FusedLocationProviderClient
+    @Inject
     lateinit var dataHelperManager: DataHelperManager
 
     var lat: String = ""
@@ -41,23 +49,28 @@ class IntroFragment : BaseFragment<FragmentIntroBinding, IntroViewModel>(R.layou
     var lon: String = ""
     private val LOCATION_PERMISSION_REQUEST_CODE = 1
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        binding.vpIntro.adapter = IntroAdapter(prepareIntroList())
-//        binding.wormDotsIndicator.attachTo(viewPager2 = binding.vpIntro)
-        binding.vpIntro.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-            override fun onPageSelected(position: Int) {
-                super.onPageSelected(position)
-                checkLocationPermission()
-                if (position == prepareIntroList().size - 1) {
-                    binding.btNext.text = getString(R.string.start)
-                } else if (position == prepareIntroList().size - 2) {
-                } else binding.btNext.text = getString(R.string.next)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val view = super.onCreateView(inflater, container, savedInstanceState)
+
+        // Window insets için padding ekle
+        view?.let {
+            ViewCompat.setOnApplyWindowInsetsListener(it) { v, insets ->
+                val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+                v.setPadding(0, systemBars.top, 0, systemBars.bottom)
+                insets
             }
-        })
-        binding.btNext.setOnClickListener {
-            if (binding.btNext.text == getString(R.string.start) && binding.vpIntro.currentItem == prepareIntroList().size - 1) {
-                if (context?.let { isLocationEnabled(it) } == true) {
+        }
+
+        val composeView = view?.findViewById<ComposeView>(R.id.compose_view)
+        composeView?.setContent {
+            val introList = prepareIntroList()
+            IntroScreenWithPager(introList) {
+                // burası sadece callback tetikleme
+                if (isLocationEnabled(requireContext())) {
                     lifecycleScope.launch {
                         viewModel.onClickNext(
                             dataHelperManager.getLatitude(),
@@ -67,14 +80,71 @@ class IntroFragment : BaseFragment<FragmentIntroBinding, IntroViewModel>(R.layou
                     }
                 } else {
                     showEnableLocationDialog(requireContext())
-                    return@setOnClickListener
                 }
-            } else {
-                binding.vpIntro.setCurrentItem(binding.vpIntro.currentItem + 1, true)
+            }
+
+        }
+
+
+
+        return view
+    }
+
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        location = LocationServices.getFusedLocationProviderClient(this.requireActivity())
+//        binding.vpIntro.adapter = IntroAdapter(prepareIntroList())
+//        binding.vpIntro.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+//            override fun onPageSelected(position: Int) {
+//                super.onPageSelected(position)
+//                checkLocationPermission()
+//                if (position == prepareIntroList().size - 1) {
+//                    binding.btNext.text = getString(R.string.start)
+//                } else if (position == prepareIntroList().size - 2) {
+//                } else binding.btNext.text = getString(R.string.next)
+//            }
+//        })
+//        binding.btNext.setOnClickListener {
+//            if (binding.btNext.text == getString(R.string.start) && binding.vpIntro.currentItem == prepareIntroList().size - 1) {
+//                if (context?.let { isLocationEnabled(it) } == true) {
+//                    lifecycleScope.launch {
+//                        viewModel.onClickNext(
+//                            dataHelperManager.getLatitude(),
+//                            dataHelperManager.getLongitude()
+//                        )
+//                        dataHelperManager.firstAttach()
+//                    }
+//                } else {
+//                    showEnableLocationDialog(requireContext())
+//                    return@setOnClickListener
+//                }
+//            } else {
+//                binding.vpIntro.setCurrentItem(binding.vpIntro.currentItem + 1, true)
+//            }
+//        }
+//        location = LocationServices.getFusedLocationProviderClient(this.requireActivity())
+//        dataHelperManager = DataHelperManager(requireContext())
+        viewModel.baseEvent.observe(viewLifecycleOwner) { event ->
+            when(event) {
+                is BaseViewEvent.NavigateTo -> {
+                    findNavController().navigate(event.directions)
+                }
+                is BaseViewEvent.ShowMessage -> {
+                    Toast.makeText(requireContext(), event.message, Toast.LENGTH_SHORT).show()
+                }
+                is BaseViewEvent.ShowToast -> {
+                    Toast.makeText(requireContext(), event.message, Toast.LENGTH_SHORT).show()
+                }
+
+                else -> {}
             }
         }
-        location = LocationServices.getFusedLocationProviderClient(this.requireActivity())
-        dataHelperManager = DataHelperManager(requireContext())
+    }
+
+    override fun shouldUseCompose(): Boolean {
+        return true
+
     }
 
     private fun prepareIntroList(): ArrayList<IntroModel> {
@@ -87,7 +157,7 @@ class IntroFragment : BaseFragment<FragmentIntroBinding, IntroViewModel>(R.layou
                 description = getString(R.string.first_description)
             ),
             IntroModel(
-                backgroundId = R.drawable.walkthrough_second_bg,
+                backgroundId = R.drawable.walkthorugh_second_bg,
                 drawableId = R.drawable.walkthrough_second,
                 tittle = getString(R.string.walktrough_second),
                 description = getString(R.string.second_description)
@@ -101,6 +171,7 @@ class IntroFragment : BaseFragment<FragmentIntroBinding, IntroViewModel>(R.layou
         )
     }
 
+    @SuppressLint("MissingPermission")
     private fun checkLocationPermission() {
         val fineLocationPermission = PackageManager.PERMISSION_GRANTED ==
                 ActivityCompat.checkSelfPermission(
@@ -156,18 +227,18 @@ class IntroFragment : BaseFragment<FragmentIntroBinding, IntroViewModel>(R.layou
     }
 
     fun showEnableLocationDialog(context: Context) {
-        isLocationDialogShowing
-        val explain = R.string.need_permission
+        if (isLocationDialogShowing) return
+        isLocationDialogShowing = true
+        val explain = getString(R.string.need_permission)
         val alertDialog =
             AlertDialog.Builder(context).setTitle("Konum Hizmetleri").setCancelable(false)
                 .setMessage(explain).setPositiveButton("Ayarlar") { dialog, _ ->
                     val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
                     context.startActivity(intent)
-                    !isLocationDialogShowing
-                    if (!isLocationDialogShowing) {
-                        dialog.dismiss()
-                    }
+                    isLocationDialogShowing = false
+                    dialog.dismiss()
                 }.setNegativeButton("İptal") { dialog, _ ->
+                    isLocationDialogShowing = false
                     dataHelperManager = DataHelperManager(requireContext())
                     lifecycleScope.launch(Dispatchers.Default) {
                         lat = dataHelperManager.getLatitude()
@@ -175,10 +246,8 @@ class IntroFragment : BaseFragment<FragmentIntroBinding, IntroViewModel>(R.layou
                         viewModel.onClickNext(lat = lat, lon = lon)
                     }
                     dialog.dismiss()
-
                 }
                 .setCancelable(false)
-
                 .create()
         alertDialog.show()
 
@@ -192,12 +261,19 @@ class IntroFragment : BaseFragment<FragmentIntroBinding, IntroViewModel>(R.layou
 
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                isLocationEnabled(requireContext())
+                if (isLocationEnabled(requireContext())) {
+                    checkLocationPermission()
+                } else {
+                    showEnableLocationDialog(requireContext())
+                }
             } else {
-
+                Toast.makeText(
+                    requireContext(),
+                    "Konum izni verilmedi. Hava durumu bilgilerini görmek için konum izni gereklidir.",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
             super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
         }
     }
 

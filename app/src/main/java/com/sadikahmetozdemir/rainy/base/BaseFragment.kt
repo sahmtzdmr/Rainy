@@ -1,11 +1,13 @@
 package com.sadikahmetozdemir.rainy.base
 
+import android.content.res.Resources.Theme
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.LayoutRes
+import androidx.compose.ui.platform.ComposeView
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
@@ -16,6 +18,9 @@ import com.sadikahmetozdemir.rainy.BR
 import com.sadikahmetozdemir.rainy.core.ui.findGenericSuperclass
 import com.sadikahmetozdemir.rainy.utils.extensions.snackbar
 import java.lang.reflect.ParameterizedType
+import androidx.compose.runtime.Composable
+import com.sadikahmetozdemir.rainy.R
+
 
 abstract class BaseFragment<VDB : ViewDataBinding, VM : BaseViewModel> constructor(
     @LayoutRes private val layoutId: Int,
@@ -27,11 +32,11 @@ abstract class BaseFragment<VDB : ViewDataBinding, VM : BaseViewModel> construct
                 .actualTypeArguments[1] as Class<VM>
         }
     lateinit var viewModel: VM
-    private var _binding: VDB? = null
+     var _binding: VDB? = null
     val binding: VDB get() = _binding!!
     open val isSharedViewModel = false
     var rootView: View? = null
-    private var isViewCreated = false
+     var isViewCreated = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,9 +61,21 @@ abstract class BaseFragment<VDB : ViewDataBinding, VM : BaseViewModel> construct
         binding.lifecycleOwner = viewLifecycleOwner
         binding.setVariable(BR.vM, viewModel)
         rootView = binding.root
+
+        if (shouldUseCompose()) {
+            // Binding nesnesi üzerinden ComposeView'e erişim
+            val composeView = binding.root.findViewById<ComposeView>(R.id.compose_view)
+            composeView.setContent {
+                FragmentContent()
+            }
+        }
+
         return rootView
     }
 
+    open fun shouldUseCompose(): Boolean {
+        return false // Varsayılan olarak Compose kullanılmaz
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -96,4 +113,7 @@ abstract class BaseFragment<VDB : ViewDataBinding, VM : BaseViewModel> construct
 
     }
 
+    @Composable
+    open fun FragmentContent() {
+    }
 }

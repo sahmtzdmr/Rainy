@@ -1,4 +1,4 @@
-package com.sadikahmetozdemir.rainy.ui
+package com.sadikahmetozdemir.rainy.ui.walktrough
 
 import com.sadikahmetozdemir.rainy.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel

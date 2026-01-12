@@ -14,3 +14,11 @@
 .externalNativeBuild
 .cxx
 local.properties
+/dist/
+/out/
+
+# Keystore files - ASLA GitHub'a gönderilmemeli!
+*.jks
+*.keystore
+/jks/
+*.key

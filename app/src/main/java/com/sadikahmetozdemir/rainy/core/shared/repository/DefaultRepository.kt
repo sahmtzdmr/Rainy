@@ -2,6 +2,7 @@ package com.sadikahmetozdemir.rainy.core.shared.repository
 
 import com.sadikahmetozdemir.rainy.core.service.WeatherAPI
 import com.sadikahmetozdemir.rainy.core.shared.remote.WeatherResponseModel
+import com.sadikahmetozdemir.rainy.core.shared.remote.hourly.HourlyWeatherResponse
 import sadikahmetozdemir.rainy.core.shared.remote.daily.DailyWeatherResponse
 import javax.inject.Inject
 
@@ -27,6 +28,17 @@ class DefaultRepository @Inject constructor(private val weatherAPI: WeatherAPI) 
     ): DailyWeatherResponse {
         return execute {
             weatherAPI.getDailyWeather(lat, lon, cnt,units)
+        }
+    }
+
+    suspend fun getHourlyWeather(
+        lat: String,
+        lon: String,
+        units: String,
+        cnt: Int = 24
+    ): HourlyWeatherResponse {
+        return execute {
+            weatherAPI.getHourlyWeather(lat, lon, units, cnt)
         }
     }
 

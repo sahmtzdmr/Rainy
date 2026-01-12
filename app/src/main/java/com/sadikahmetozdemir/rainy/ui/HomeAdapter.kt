@@ -33,6 +33,12 @@ class HomeAdapter(private val dailyWeatherResponse: ArrayList<DailyWeatherRespon
                     item.name?.let { it1 -> itemClicked?.invoke(it1) }
                 }
                 lavChildWeather.changeWeatherIcon(item.weather.get(0).icon.toString())
+                // Hava durumu açıklaması
+                item.weather.get(0).description?.let { description ->
+                    tvChildWeatherDescription.text = description.replaceFirstChar { 
+                        if (it.isLowerCase()) it.titlecase() else it.toString() 
+                    }
+                }
                 val tempInt = item.main?.temp?.roundToInt()
                 tvChildDegree.text = tempInt.toString() + "°C"
             }
@@ -44,10 +50,16 @@ class HomeAdapter(private val dailyWeatherResponse: ArrayList<DailyWeatherRespon
     }
 
     fun updateDailyData(dailyData: List<DailyWeatherResponse.WeatherList>) {
+        val oldSize = dailyWeatherResponse.size
         dailyWeatherResponse.clear()
         dailyWeatherResponse.addAll(dailyData)
         Log.d("TAG", "UpdateDailyData: ${dailyData}")
-        notifyDataSetChanged()
+        // Smooth animasyon için notifyItemRangeChanged kullan
+        if (oldSize == dailyData.size) {
+            notifyItemRangeChanged(0, dailyData.size)
+        } else {
+            notifyDataSetChanged()
+        }
     }
 }
 

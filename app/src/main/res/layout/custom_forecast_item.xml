@@ -5,7 +5,9 @@
     android:layout_width="110dp"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    android:background="@color/background">
+    android:background="@drawable/card_background"
+    android:elevation="4dp"
+    android:padding="8dp">
 
 
     <TextView
@@ -34,10 +36,28 @@
         app:lottie_rawRes="@raw/windy_icon" />
 
     <TextView
+        android:id="@+id/tv_child_weather_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_8"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="4dp"
+        android:gravity="center"
+        android:maxLines="2"
+        android:ellipsize="end"
+        android:textColor="@color/black"
+        android:textSize="11sp"
+        android:textStyle="italic"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lav_child_weather"
+        tools:text="Açık" />
+
+    <TextView
         android:id="@+id/tv_child_degree"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_24"
+        android:layout_marginTop="4dp"
         android:layout_marginBottom="@dimen/margin_16"
         android:textColor="@color/black"
         android:textSize="16sp"
@@ -45,7 +65,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/lav_child_weather"
-        tools:text="30" />
+        app:layout_constraintTop_toBottomOf="@id/tv_child_weather_description"
+        tools:text="30°C" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

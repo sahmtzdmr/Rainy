@@ -16,11 +16,14 @@
         backgroundResource="@{vM.weather.weatherItemModel.get(0).icon}"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:fitsSystemWindows="false"
         tools:context=".ui.HomeFragment">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/main_content"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:fitsSystemWindows="false">
 
             <androidx.constraintlayout.widget.Guideline
                 android:id="@+id/guidelineLeft"
@@ -34,6 +37,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
+                app:layout_constraintGuide_end="80dp" />
+
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/guidelineHourlyRight"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
                 app:layout_constraintGuide_end="16dp" />
 
             <androidx.appcompat.widget.AppCompatEditText
@@ -42,12 +52,14 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_8"
+                android:layout_marginEnd="8dp"
                 android:digits="abcçdefgğhıijklmnoöpqrsştuüvwxyzABCÇDEFGĞHIİJKLMNOÖPQRSŞTUÜVWXYZ"
                 android:hint="@string/city_name"
                 android:imeOptions="actionDone"
                 android:importantForAutofill="no"
                 android:inputType="text"
                 android:text="@={vM.etCity}"
+                android:visibility="gone"
                 app:layout_constraintBottom_toTopOf="@id/iv_weather"
                 app:layout_constraintEnd_toStartOf="@id/iv_search"
                 app:layout_constraintStart_toStartOf="@id/guidelineLeft"
@@ -58,34 +70,22 @@
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:layout_marginTop="@dimen/margin_8"
-                android:onClick="@{()->vM.getForecastData()}"
                 android:src="@drawable/ic_search"
-                app:layout_constraintBottom_toBottomOf="@id/et_search"
-                app:layout_constraintEnd_toStartOf="@id/iv_share"
-                app:layout_constraintStart_toEndOf="@id/et_search"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/iv_share"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:src="@drawable/ic_share"
-                android:layout_marginTop="@dimen/margin_8"
-                app:layout_constraintEnd_toEndOf="@id/guidelineRight"
-                app:layout_constraintStart_toEndOf="@id/iv_search"
-                app:layout_constraintTop_toTopOf="parent" />
+                android:contentDescription="@string/city_name"
+                app:layout_constraintEnd_toEndOf="@id/guidelineHourlyRight"
+                app:layout_constraintTop_toTopOf="@id/et_search" />
 
             <TextView
                 android:id="@+id/tv_cityName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:rotation="90"
                 android:textAllCaps="true"
-                android:textColor="@color/white"
-                android:textSize="16sp"
-                app:layout_constraintBottom_toTopOf="@id/llDetails"
-                app:layout_constraintEnd_toStartOf="@id/iv_weather"
-                app:layout_constraintStart_toStartOf="@id/iv_weather"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:paddingStart="16dp"
+                app:layout_constraintBottom_toTopOf="@id/tv_degree"
+                app:flow_horizontalBias="0.2"
+                app:layout_constraintStart_toStartOf="@id/guidelineLeft"
                 app:layout_constraintTop_toBottomOf="@id/et_search"
                 tools:text="Deneme" />
 
@@ -94,15 +94,17 @@
                 android:id="@+id/tv_weather"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:rotation="270"
+                android:layout_marginBottom="16dp"
                 android:text="@{vM.weather.weatherItemModel.get(0).description}"
                 android:textAllCaps="true"
-                android:textColor="@color/white"
-                android:textSize="18sp"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:gravity="center"
                 app:layout_constraintBottom_toTopOf="@id/llDetails"
-                app:layout_constraintEnd_toEndOf="@id/guidelineRight"
-                app:layout_constraintStart_toEndOf="@id/iv_weather"
-                app:layout_constraintTop_toTopOf="@id/iv_weather" />
+                app:layout_constraintEnd_toStartOf="@id/rv_hourly_weather"
+                app:layout_constraintStart_toStartOf="@id/guidelineLeft"
+                app:layout_constraintTop_toBottomOf="@id/iv_weather" />
 
 
             <TextView
@@ -158,7 +160,7 @@
                 android:paddingStart="30dp"
                 android:paddingTop="30dp"
                 app:layout_constraintBottom_toTopOf="@id/llDetails"
-                app:layout_constraintEnd_toEndOf="@id/guidelineRight"
+                app:layout_constraintEnd_toStartOf="@id/rv_hourly_weather"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="@id/guidelineLeft"
                 app:layout_constraintTop_toBottomOf="@id/et_search"
@@ -185,21 +187,54 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="16dp"
                 android:src="@drawable/ic_rain"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/tv_loading_message"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_loading_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Hava durumu bilgileri yükleniyor..."
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="italic"
+                android:gravity="center"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/iconImageView" />
+
+            <TextView
+                android:id="@+id/tv_error_message"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Şehir bulunamadı"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="italic"
+                android:gravity="center"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/iconImageView" />
 
             <LinearLayout
                 android:id="@+id/llDetails"
                 android:layout_width="wrap_content"
                 android:layout_height="35dp"
                 android:layout_marginBottom="@dimen/margin_8"
-                android:background="@color/background"
+                android:background="@drawable/card_background"
+                android:elevation="6dp"
                 android:orientation="horizontal"
                 app:flow_horizontalBias="0.5"
                 app:layout_constraintBottom_toTopOf="@id/rv_child_item"
-                app:layout_constraintEnd_toEndOf="@id/guidelineRight"
+                app:layout_constraintEnd_toStartOf="@id/rv_hourly_weather"
                 app:layout_constraintStart_toStartOf="@id/guidelineLeft"
                 app:layout_constraintTop_toBottomOf="@id/iv_weather">
 
@@ -244,6 +279,18 @@
 
             </LinearLayout>
 
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_hourly_weather"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_marginStart="8dp"
+                android:orientation="vertical"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintBottom_toTopOf="@id/rv_child_item"
+                app:layout_constraintEnd_toEndOf="@id/guidelineHourlyRight"
+                app:layout_constraintStart_toEndOf="@id/guidelineRight"
+                app:layout_constraintTop_toBottomOf="@id/iv_search"
+                tools:listitem="@layout/item_hourly_weather" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_child_item"
